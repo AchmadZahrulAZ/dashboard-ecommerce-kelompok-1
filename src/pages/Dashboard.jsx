@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import SidebarComponent from "../components/SidebarComponent";
 import BannerPage from "./BannerPage";
 import ProductPage from "./ProductPage";
@@ -10,10 +10,50 @@ import PromotionPage from "./PromotionPage";
 import RatingPage from "./RatingPage";
 import StockPage from "./StockPage";
 
-const Dashboard = () => {
+// Helper Component to get the current route and pass it to Sidebar
+const DashboardWithSidebar = () => {
+  const location = useLocation();
+
+  // Map route paths to page names
+  const getActivePage = () => {
+    switch (location.pathname) {
+      case "/home":
+        return "Home";
+      case "/product":
+      case "/product/add":
+      case "/product/edit/:id":
+      case "/product/detail/:id":
+        return "Product";
+      case "/category":
+        return "Category";
+      case "/orders":
+        return "Orders";
+      case "/promotion":
+      case "/promotion/add":
+      case "/promotion/edit/:id":
+      case "/promotion/detail/:id":
+        return "Promotion";
+      case "/banner":
+      case "/banner/add":
+      case "/banner/edit/:id":
+      case "/banner/detail/:id":
+        return "Banner Management";
+      case "/rating":
+        return "Rating";
+      case "/stock":
+      case "/stock/add":
+      case "/stock/edit/:id":
+      case "/stock/detail/:id":
+        return "Stock";
+      default:
+        return "Home";
+    }
+  };
+
   return (
-    <Router>
-      <SidebarComponent />
+    <div className="flex">
+      {/* Pass activePage dynamically */}
+      <SidebarComponent activePage={getActivePage()} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
@@ -42,6 +82,14 @@ const Dashboard = () => {
         <Route path="/rating" element={<RatingPage />} />
         <Route path="/category" element={<CategoryPage />} />
       </Routes>
+    </div>
+  );
+};
+
+const Dashboard = () => {
+  return (
+    <Router>
+      <DashboardWithSidebar />
     </Router>
   );
 };
