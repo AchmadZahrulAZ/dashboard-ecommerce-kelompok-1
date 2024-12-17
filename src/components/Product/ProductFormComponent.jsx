@@ -1,6 +1,7 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
-const ProductFormComponent = () => {
+const ProductFormComponent = ({ isEdit, isDetail }) => {
   const { id } = useParams();
   return (
     <div>
