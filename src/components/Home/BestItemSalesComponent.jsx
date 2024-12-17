@@ -3,20 +3,49 @@ import Items from "../../assets/icons/home/Items.svg";
 
 const BestItemSalesComponent = () => {
   return (
-    <div class="card-body py-7">
-      <div className="d-flex flex-column">
-        <h1>Best Item</h1>
-        {/* <h1>Best Item Sales</h1>
-        <div className="gap-2 my-3 d-flex justify-items-center align-items-center">
-          <img src={Items} alt="" className="w-1/6" />
+    <div class="card-body py-7 px-16">
+      <h1 className="text-title-large">Best Item Sales</h1>
+      <div className=" d-flex flex-column">
+        <div className="w-full gap-4 my-3 d-flex justify-content-between ">
+          <img src={Items} alt="" className="w-1/5" />
           <div>
-            <h3 className="font-bold">Kids Electric</h3>
-            <p className="mt-2 text-sm text-gray-600">Toys</p>
+            <h3 className="font-bold">Small Bookself</h3>
+            <p className="text-sm text-textlightcstm ">Furniture</p>
           </div>
-          <h3 className="font-bold">
+          <h3 className="font-extrabold">
             <i class="bi bi-chevron-right"></i>
           </h3>
-        </div> */}
+        </div>
+        <div className="w-full gap-4 my-3 d-flex justify-content-between ">
+          <img src={Items} alt="" className="w-1/5" />
+          <div>
+            <h3 className="font-bold">Small Bookself</h3>
+            <p className="text-sm text-textlightcstm ">Furniture</p>
+          </div>
+          <h3 className="font-extrabold">
+            <i class="bi bi-chevron-right"></i>
+          </h3>
+        </div>
+        <div className="w-full gap-4 my-3 d-flex justify-content-between ">
+          <img src={Items} alt="" className="w-1/5" />
+          <div>
+            <h3 className="font-bold">Small Bookself</h3>
+            <p className="text-sm text-textlightcstm ">Furniture</p>
+          </div>
+          <h3 className="font-extrabold">
+            <i class="bi bi-chevron-right"></i>
+          </h3>
+        </div>
+        <div className="w-full gap-4 my-3 d-flex justify-content-between ">
+          <img src={Items} alt="" className="w-1/5" />
+          <div>
+            <h3 className="font-bold">Small Bookself</h3>
+            <p className="text-sm text-textlightcstm ">Furniture</p>
+          </div>
+          <h3 className="font-extrabold">
+            <i class="bi bi-chevron-right"></i>
+          </h3>
+        </div>
       </div>
     </div>
   );

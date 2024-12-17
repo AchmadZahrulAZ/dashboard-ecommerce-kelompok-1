@@ -9,7 +9,7 @@ const EarningMonthComponent = () => {
             <h4 className="text-title-large">Total earning this month</h4>
           </div>
           <div className="my-8">
-            <h1 className="font-bold text-7xl text-primarycstm">310$</h1>
+            <h1 className="font-semibold text-7xl text-primarycstm">310$</h1>
           </div>
           <div>
             <h5 className="text-textlightcstm text-title-medium">

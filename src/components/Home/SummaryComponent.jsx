@@ -6,8 +6,8 @@ import Users from "../../assets/icons/home/Users.svg";
 const SummaryComponent = () => {
   return (
     <div class="card">
-      <div class="card-body py-10">
-        <h1 className="text-2xl mb-7 ">Summary</h1>
+      <div class="card-body py-11">
+        <h1 className=" mb-7 text-title-large">Summary</h1>
         <div className="row">
           <div className="col-md-3">
             <div class="card">
