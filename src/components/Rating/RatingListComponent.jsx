@@ -9,10 +9,10 @@ import ChevronDownIcon from '../../assets/icons/rating/WhiteChevronDown.svg';
 import PaginationChevronDownIcon from '../../assets/icons/rating/PaginationChevronDown.svg';
 import PaginationChevronLeftIcon from '../../assets/icons/rating/PaginationChevronLeft.svg';
 import PaginationChevronRightIcon from '../../assets/icons/rating/PaginationChevronRight.svg';
-import DummyImage1 from '../../assets/images/RatingDummy1.png';
-import DummyImage2 from '../../assets/images/RatingDummy2.png';
-import DummyImage3 from '../../assets/images/RatingDummy3.png';
-import DummyImage4 from '../../assets/images/RatingDummy4.png';
+import DummyImage1 from '../../assets/images/rating/RatingDummy1.png';
+import DummyImage2 from '../../assets/images/rating/RatingDummy2.png';
+import DummyImage3 from '../../assets/images/rating/RatingDummy3.png';
+import DummyImage4 from '../../assets/images/rating/RatingDummy4.png';
 
 const RatingListComponent = () => {
   const [expandedRow, setExpandedRow] = useState(null);
