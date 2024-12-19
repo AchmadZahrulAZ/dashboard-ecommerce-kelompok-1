@@ -20,7 +20,7 @@ import StockIcon from "../assets/icons/sidebar/Stock.svg";
 import StockActiveIcon from "../assets/icons/sidebar/Stock_active.svg";
 
 // Import Photo Profile Dummy
-import PhotoProfile from "../assets/images/PhotoProfileDummy.png";
+import PhotoProfile from "../assets/images/sidebar/PhotoProfileDummy.png";
 
 const SidebarComponent = ({ activePage }) => {
   const navigate = useNavigate();
