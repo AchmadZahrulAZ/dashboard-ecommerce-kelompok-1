@@ -3,7 +3,7 @@ import Items from "../../assets/icons/home/Items.svg";
 
 const BestItemSalesComponent = () => {
   return (
-    <div class="card-body py-7 px-16">
+    <div class="card-body py-10 px-16">
       <h1 className="text-title-large">Best Item Sales</h1>
       <div className=" d-flex flex-column">
         <div className="w-full gap-4 my-3 d-flex justify-content-between ">
