@@ -1,0 +1,21 @@
+.custom-switch .form-check-input {
+  width: 3em;
+  height: 1.5em;
+}
+
+.custom-switch .form-check-label {
+  padding-left: 2.5em;
+}
+
+.custom-switch .form-check-input:checked {
+  background-color: #db4444;
+  border-color: #db4444;
+}
+
+.custom-switch .form-check-input:checked::before {
+  background-color: white;
+}
+
+.tableCstm > thead > tr > th {
+  border: none !important;
+}
