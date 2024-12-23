@@ -58,7 +58,7 @@ const DashboardWithSidebar = () => {
   return (
     <div className="flex items-start justify-center lg:justify-between">
       <SidebarComponent activePage={getActivePage()} />
-      <div className="flex flex-col w-full h-screen px-3 py-12 bg-backgroundcstm">
+      <div className="flex flex-col w-full min-h-screen px-3 py-12 bg-backgroundcstm">
         {/* Pass activePage dynamically */}
         <Routes>
           <Route path="/" element={<HomePage />} />

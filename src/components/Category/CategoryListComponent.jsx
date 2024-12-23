@@ -8,6 +8,8 @@ import PaginationChevronDownIcon from "../../assets/icons/rating/PaginationChevr
 import PaginationChevronLeftIcon from "../../assets/icons/rating/PaginationChevronLeft.svg";
 import PaginationChevronRightIcon from "../../assets/icons/rating/PaginationChevronRight.svg";
 import "../Product/ProductStyles.css";
+import CategoryModalComponent from "./CategoryModalComponent";
+import Swal from "sweetalert2";
 
 const CategoryListComponent = () => {
   {
@@ -64,11 +66,13 @@ const CategoryListComponent = () => {
     },
   ]);
 
+  const [isEdit, setIsEdit] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
   });
 
+  // requestSort
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -77,6 +81,7 @@ const CategoryListComponent = () => {
     setSortConfig({ key, direction });
   };
 
+  // Sorting Category
   const sortedCategory = React.useMemo(() => {
     let sortableCategory = [...category];
     if (sortConfig.key !== null) {
@@ -92,6 +97,37 @@ const CategoryListComponent = () => {
     }
     return sortableCategory;
   }, [category, sortConfig]);
+
+  // Sweet Alert 2 Delete Category
+  const handleDeleteCategory = (categoryId) => {
+    Swal.fire({
+      title: "Delete Category?",
+      text: "Are you sure want to delete this category?",
+      icon: "warning",
+      iconHtml: `<i class="bi bi-trash"></i>`,
+      customClass: {
+        title: "my-title-class",
+        cancelButton: "swal2-cancel-outline",
+        confirmButton: "swal2-confirm-no-outline",
+      },
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setCategory(category.filter((cat) => cat.id !== categoryId));
+        Swal.fire({
+          title: "This category was successfully deleted",
+          icon: "success",
+          customClass: {
+            title: "text-2xl font-bold",
+          },
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
 
   return (
     <div className="container">
@@ -109,7 +145,15 @@ const CategoryListComponent = () => {
             </div>
           </div>
           <div>
-            <button className="py-2 btn btn-danger">Add New Category</button>
+            <button
+              className="py-2 btn btn-danger"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#modalFormCategory"
+              onClick={() => setIsEdit(false)}
+            >
+              Add New Category
+            </button>
           </div>
         </div>
 
@@ -187,14 +231,15 @@ const CategoryListComponent = () => {
                   </td>
                   <td>
                     <div className="gap-2 d-flex align-content-center align-items-center">
-                      <button>
-                        <img
-                          src={EditIcon}
-                          alt="Edit Button"
-                          className="transition-transform hover:scale-110"
-                        />
+                      <button
+                        onClick={() => setIsEdit(true)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalFormCategory"
+                      >
+                        <img src={EditIcon} alt="Edit Button" />
                       </button>
-                      <button>
+
+                      <button onClick={() => handleDeleteCategory(category.id)}>
                         <img
                           src={DeleteIcon}
                           alt="Delete Button"
@@ -225,6 +270,8 @@ const CategoryListComponent = () => {
               </div>
             </div>
           </div>
+          {/* Modal */}
+          <CategoryModalComponent isEdit={isEdit} />
         </div>
       </div>
     </div>
