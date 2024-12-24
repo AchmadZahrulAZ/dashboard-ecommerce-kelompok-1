@@ -1,0 +1,48 @@
+.custom-switch .form-check-input {
+  width: 3em;
+  height: 1.5em;
+}
+
+.custom-switch .form-check-label {
+  padding-left: 2.5em;
+}
+
+.custom-switch .form-check-input:checked {
+  background-color: #db4444;
+  border-color: #db4444;
+}
+
+.custom-switch .form-check-input:checked::before {
+  background-color: white;
+}
+
+.tableCstm > thead > tr > th {
+  border: none !important;
+}
+
+.swal2-icon.swal2-warning { 
+  border-color: #db4444 !important; 
+}
+
+.swal2-icon.swal2-warning .swal2-icon-content { 
+  color: #db4444!important; 
+}
+.my-title-class {
+  color: #db4444 
+}
+
+.swal2-actions { 
+  flex-direction: row-reverse !important; 
+}
+
+.swal2-cancel-outline {
+  border: 1px solid #d33 !important; 
+  background-color: transparent !important;
+  color: #d33 !important;
+  width: 10rem !important;
+}
+
+.swal2-confirm-no-outline {
+  border: none !important; 
+  width: 10rem !important;
+}
