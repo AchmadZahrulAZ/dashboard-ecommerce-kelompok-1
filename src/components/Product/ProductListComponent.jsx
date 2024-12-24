@@ -10,11 +10,10 @@ import PaginationChevronLeftIcon from "../../assets/icons/rating/PaginationChevr
 import PaginationChevronRightIcon from "../../assets/icons/rating/PaginationChevronRight.svg";
 import { Link } from "react-router-dom";
 import "../Product/ProductStyles.css";
+import Swal from "sweetalert2";
 
 const ProductListComponent = () => {
-  {
-    /* Product Dummy */
-  }
+  /* Product Dummy */
   const [products, setProducts] = useState([
     {
       id: "PRD-001",
@@ -91,6 +90,45 @@ const ProductListComponent = () => {
     }
     return sortableProducts;
   }, [products, sortConfig]);
+
+  // handle switch
+  const handleSwitchChange = (productId, newPublishedValue) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? { ...product, published: newPublishedValue }
+          : product
+      )
+    );
+
+    // confirmation alert
+    if (!newPublishedValue) {
+      Swal.fire({
+        title: "Confirmation",
+        text: "Are you sure want to unpublish this category? ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonText: "No",
+        confirmButtonText: "Yes",
+        customClass: {
+          title: "my-title-class",
+          cancelButton: "swal2-cancel-outline",
+          confirmButton: "swal2-confirm-no-outline",
+        },
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          setProducts((prevProducts) =>
+            prevProducts.map((product) =>
+              product.id === productId
+                ? { ...product, published: true }
+                : product
+            )
+          );
+        }
+      });
+    }
+  };
 
   return (
     <div className="container">
@@ -229,8 +267,10 @@ const ProductListComponent = () => {
                         type="checkbox"
                         role="switch"
                         id="flexSwitchCheckChecked"
-                        // checked={product.published}
-                        // disabled
+                        checked={product.published}
+                        onChange={(e) =>
+                          handleSwitchChange(product.id, e.target.checked)
+                        }
                       />
                     </div>
                   </td>

@@ -129,6 +129,44 @@ const CategoryListComponent = () => {
     });
   };
 
+  //handle switch
+  const handleSwitchChange = (categoryId, newPublishedValue) => {
+    setCategory((prevCategory) =>
+      prevCategory.map((category) =>
+        category.id === categoryId
+          ? { ...category, published: newPublishedValue }
+          : category
+      )
+    );
+    // confirmation alert
+    if (!newPublishedValue) {
+      Swal.fire({
+        title: "Confirmation",
+        text: "Are you sure want to unpublish this category? ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonText: "No",
+        confirmButtonText: "Yes",
+        customClass: {
+          title: "my-title-class",
+          cancelButton: "swal2-cancel-outline",
+          confirmButton: "swal2-confirm-no-outline",
+        },
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          setCategory((prevCategory) =>
+            prevCategory.map((category) =>
+              category.id === categoryId
+                ? { ...category, published: true }
+                : category
+            )
+          );
+        }
+      });
+    }
+  };
+
   return (
     <div className="container">
       {/* Tittle Section */}
@@ -224,8 +262,10 @@ const CategoryListComponent = () => {
                         type="checkbox"
                         role="switch"
                         id="flexSwitchCheckChecked"
-                        // checked={product.published}
-                        // disabled
+                        checked={category.published}
+                        onChange={(e) =>
+                          handleSwitchChange(category.id, e.target.checked)
+                        }
                       />
                     </div>
                   </td>
