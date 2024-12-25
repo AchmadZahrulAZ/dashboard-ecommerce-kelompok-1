@@ -130,6 +130,38 @@ const ProductListComponent = () => {
     }
   };
 
+  const handleDeleteProduct = (productId) => {
+    Swal.fire({
+      title: "Delete Product?",
+      text: "Are you sure want to delete this poduct?",
+      icon: "warning",
+      iconHtml: `<i class="bi bi-trash"></i>`,
+      customClass: {
+        title: "my-title-class",
+        cancelButton: "swal2-cancel-outline",
+        confirmButton: "swal2-confirm-no-outline",
+      },
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== productId)
+        );
+        Swal.fire({
+          title: "This product was successfully deleted",
+          icon: "success",
+          customClass: {
+            title: "text-2xl font-bold",
+          },
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
   return (
     <div className="container">
       {/* Tittle Section */}
@@ -290,13 +322,13 @@ const ProductListComponent = () => {
                           className="transition-transform hover:scale-110"
                         />
                       </Link>
-                      <Link to={"/product/delete/" + product.id}>
+                      <button onClick={() => handleDeleteProduct(product.id)}>
                         <img
                           src={DeleteIcon}
                           alt="Delete Button"
                           className="transition-transform hover:scale-110"
                         />
-                      </Link>
+                      </button>
                     </div>
                   </td>
                 </tr>

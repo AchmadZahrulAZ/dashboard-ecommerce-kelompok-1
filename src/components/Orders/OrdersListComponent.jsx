@@ -9,6 +9,8 @@ import PaginationChevronDownIcon from "../../assets/icons/rating/PaginationChevr
 import PaginationChevronLeftIcon from "../../assets/icons/rating/PaginationChevronLeft.svg";
 import PaginationChevronRightIcon from "../../assets/icons/rating/PaginationChevronRight.svg";
 import "../Product/ProductStyles.css";
+import OrdersModalComponent from "./OrdersModalComponent";
+import Swal from "sweetalert2";
 
 const OrdersListComponent = () => {
   {
@@ -54,6 +56,8 @@ const OrdersListComponent = () => {
     direction: "ascending",
   });
 
+  const [status, setStatus] = useState("");
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -77,6 +81,34 @@ const OrdersListComponent = () => {
     }
     return sortableOrders;
   }, [orders, sortConfig]);
+
+  const handleCancel = () => {
+    Swal.fire({
+      title: "Confirmation",
+      text: "Are you sure want to decline this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      customClass: {
+        title: "my-title-class",
+        cancelButton: "swal2-cancel-outline",
+        confirmButton: "swal2-confirm-no-outline",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "This orders was successfully declined!",
+          icon: "success",
+          customClass: {
+            title: "text-2xl font-bold",
+          },
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
 
   return (
     <div className="container">
@@ -214,7 +246,12 @@ const OrdersListComponent = () => {
                     {order.status === "Canceled" ||
                     order.status === "Completed" ? (
                       <div className="gap-2 d-flex align-content-center align-items-center">
-                        <button>
+                        <button
+                          onClick={() => setStatus(order.status)}
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalFormOrders"
+                        >
                           <img
                             src={DetailIcon}
                             alt="Detail Button"
@@ -224,7 +261,12 @@ const OrdersListComponent = () => {
                       </div>
                     ) : (
                       <div className="gap-3 d-flex align-content-center align-items-center">
-                        <button>
+                        <button
+                          onClick={() => setStatus(order.status)}
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalFormOrders"
+                        >
                           <img
                             src={SubtractAccept}
                             alt="Accept Button"
@@ -232,7 +274,7 @@ const OrdersListComponent = () => {
                           />
                         </button>
 
-                        <button>
+                        <button type="button" onClick={handleCancel}>
                           <img
                             src={SubtractCancel}
                             alt="Cancel Button"
@@ -264,6 +306,7 @@ const OrdersListComponent = () => {
               </div>
             </div>
           </div>
+          <OrdersModalComponent status={status} />
         </div>
       </div>
     </div>
