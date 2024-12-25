@@ -1,66 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import CalendarIcon from '../../assets/icons/rating/Calendar.svg';
 import DropdownIcon from '../../assets/icons/rating/DropdownBig.svg';
 import SearchIcon from '../../assets/icons/rating/Search.svg';
-import Sort from '../../assets/icons/product/SortIcon.svg';
-import SortActive from '../../assets/icons/product/SortIconActive.svg';
-import EditIcon from '../../assets/icons/product/SolidPencil.svg';
+import SortIcon from '../../assets/icons/product/SortIcon.svg';
+import SortActiveIcon from '../../assets/icons/product/SortIconActive.svg';
 import DetailIcon from '../../assets/icons/product/SolidEye.svg';
+import EditIcon from '../../assets/icons/product/SolidPencil.svg';
 import DeleteIcon from '../../assets/icons/product/SolidTrash.svg';
-import Right from '../../assets/icons/rating/Right.svg';
 import PaginationChevronDownIcon from '../../assets/icons/rating/PaginationChevronDown.svg';
 import PaginationChevronLeftIcon from '../../assets/icons/rating/PaginationChevronLeft.svg';
 import PaginationChevronRightIcon from '../../assets/icons/rating/PaginationChevronRight.svg';
-import { Link } from 'react-router-dom';
-import '../Product/ProductStyles.css';
 
-const StockListComponent = () => {
-  {
-    /* Product Dummy */
-  }
-  const [stocks, setStocks] = useState([
-    {
-      id: 'STK-001',
-      varian: 'Warna - Hitam',
-      name: 'Laptop HP',
-      quantity: 3,
-    },
-    {
-      id: 'STK-002',
-      varian: 'Warna - Silver',
-      name: 'Laptop Lenovo',
-      quantity: 2,
-    },
-    {
-      id: 'STK-003',
-      varian: 'Warna - Merah',
-      name: 'Mouse Logitech',
-      quantity: 4,
-    },
-    {
-      id: 'STK-004',
-      varian: 'Warna - Hijau',
-      name: 'Keyboard Razer',
-      quantity: 1,
-    },
-  ]);
+const StockListComponent = ({ stocks }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Rows per page
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: 'ascending',
-  });
+  const totalPages = Math.ceil(stocks.length / itemsPerPage);
 
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
+  // Total stock quantity
+  const totalStock = stocks.reduce((sum, stock) => sum + stock.quantity, 0);
 
-  const sortedStocks = React.useMemo(() => {
-    let sortableStocks = [...stocks];
-    if (sortConfig.key !== null) {
+  // Handle sorting logic
+  const sortedStocks = useMemo(() => {
+    const sortableStocks = [...stocks];
+    if (sortConfig.key) {
       sortableStocks.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -74,24 +40,44 @@ const StockListComponent = () => {
     return sortableStocks;
   }, [stocks, sortConfig]);
 
+  // Handle search filter logic
+  const filteredStocks = sortedStocks.filter((stock) => stock.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  // Pagination logic
+  const currentStocks = filteredStocks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
   return (
     <div className="container">
-      {/* Tittle Section */}
+      {/* Title Section */}
       <div className="p-10 card">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-lato font-bold text-[#030406] text-2xl">Stock</h2>
             <div className="flex items-center text-sm font-lato text-[#DB4444] mt-2">
               <span>Home</span>
-              <img src={Right} alt="Chevron" className="mx-2" />
+              <img src={PaginationChevronRightIcon} alt="Chevron" className="mx-2" />
               <span className="font-semibold">Stock</span>
             </div>
           </div>
-          <div>
-            <Link to={'/stock/add'} className="py-2 btn btn-danger">
-              Add New Stock
-            </Link>
-          </div>
+          <Link to="/stock/add" className="py-2 btn btn-danger">
+            Add New Stock
+          </Link>
         </div>
 
         {/* Second Row */}
@@ -107,13 +93,13 @@ const StockListComponent = () => {
             </div>
             <div className="flex items-center w-[280px] h-[40px] border rounded-md">
               <img src={SearchIcon} alt="Search" className="ml-4" />
-              <input type="text" placeholder="Search" className="w-full px-4 text-sm outline-none" />
+              <input type="text" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full px-4 text-sm outline-none" />
             </div>
           </div>
 
           {/* Right Section */}
-          <div className="w-[93px] h-[44px] bg-[#EEE4FF] flex flex-col items-end justify-center rounded-md pr-2 py-7" style={{ backgroundColor: '#EEE4FF' }}>
-            <p className="font-lato font-bold text-[#DB4444] text-lg">120</p>
+          <div className="w-[93px] h-[44px] bg-[#EEE4FF] flex flex-col items-end justify-center rounded-md pr-2 py-7">
+            <p className="font-lato font-bold text-[#DB4444] text-lg">{totalStock}</p>
             <p className="font-lato font-normal text-[#DB4444] text-sm">Total Stock</p>
           </div>
         </div>
@@ -123,45 +109,43 @@ const StockListComponent = () => {
           <table className="table tableCstm">
             <thead>
               <tr>
-                <th scope="col" onClick={() => requestSort('name')}>
-                  <div className="items-center gap-1 pb-2 d-flex">
-                    <p>Product Name</p>
-                    <img src={sortConfig.key === 'name' && (sortConfig.direction === 'ascending' || sortConfig.direction === 'descending') ? SortActive : Sort} alt="Icon Sort" />
+                <th onClick={() => handleSort('name')}>
+                  <div className="flex items-center gap-1">
+                    Product Name
+                    <img src={sortConfig.key === 'name' && sortConfig.direction === 'ascending' ? SortActiveIcon : SortIcon} alt="Sort" />
                   </div>
                 </th>
-                <th scope="col" onClick={() => requestSort('sku')}>
-                  <div className="items-center gap-1 pb-2 d-flex">
-                    <p>Varian Product</p>
-                    <img src={sortConfig.key === 'sku' && (sortConfig.direction === 'ascending' || sortConfig.direction === 'descending') ? SortActive : Sort} alt="Icon Sort" />
+                <th onClick={() => handleSort('varian')}>
+                  <div className="flex items-center gap-1">
+                    Varian Product
+                    <img src={sortConfig.key === 'varian' && sortConfig.direction === 'ascending' ? SortActiveIcon : SortIcon} alt="Sort" />
                   </div>
                 </th>
-                <th scope="col" onClick={() => requestSort('stock')}>
-                  <div className="items-center gap-1 pb-2 d-flex">
-                    <p>Quantity</p>
-                    <img src={sortConfig.key === 'stock' && (sortConfig.direction === 'ascending' || sortConfig.direction === 'descending') ? SortActive : Sort} alt="Icon Sort" />
+                <th onClick={() => handleSort('quantity')}>
+                  <div className="flex items-center gap-1">
+                    Quantity
+                    <img src={sortConfig.key === 'quantity' && sortConfig.direction === 'ascending' ? SortActiveIcon : SortIcon} alt="Sort" />
                   </div>
                 </th>
-                <th scope="col " className="items-center gap-1 pb-2 d-flex">
-                  Action
-                </th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {sortedStocks.map((stock) => (
+              {currentStocks.map((stock) => (
                 <tr key={stock.id}>
-                  <td className="text-secondary">{stock.name}</td>
-                  <td className="text-secondary">{stock.varian}</td>
-                  <td className="text-secondary">{stock.quantity}</td>
+                  <td>{stock.name}</td>
+                  <td>{stock.varian}</td>
+                  <td>{stock.quantity}</td>
                   <td>
-                    <div className="gap-2 d-flex align-content-center align-items-center">
-                      <Link to={'/stock/detail/' + stock.id}>
-                        <img src={DetailIcon} alt="Detail Button" className="transition-transform hover:scale-110" />
+                    <div className="flex gap-2">
+                      <Link to={`/stock/detail/${stock.id}`}>
+                        <img src={DetailIcon} alt="Detail" />
                       </Link>
-                      <Link to={'/stock/edit/' + stock.id}>
-                        <img src={EditIcon} alt="Edit Button" className="transition-transform hover:scale-110" />
+                      <Link to={`/stock/edit/${stock.id}`}>
+                        <img src={EditIcon} alt="Edit" />
                       </Link>
-                      <Link to={'/stock/delete/' + stock.id}>
-                        <img src={DeleteIcon} alt="Delete Button" className="transition-transform hover:scale-110" />
+                      <Link to={`/stock/delete/${stock.id}`}>
+                        <img src={DeleteIcon} alt="Delete" />
                       </Link>
                     </div>
                   </td>
@@ -169,23 +153,31 @@ const StockListComponent = () => {
               ))}
             </tbody>
           </table>
+        </div>
 
-          {/* Pagination Section */}
-          <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-            <span>1-20 of 27</span>
-            <div className="flex items-center space-x-4">
-              <span>Rows per page: 20</span>
-              <img src={PaginationChevronDownIcon} alt="Dropdown" />
-              <div className="flex items-center space-x-1">
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronLeftIcon} alt="Previous" />
-                </button>
-                <span className="text-[#687182]">1/2</span>
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronRightIcon} alt="Next" />
-                </button>
-              </div>
-            </div>
+        {/* Pagination Section */}
+        <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
+          <span>
+            {currentPage}-{Math.min(currentPage * itemsPerPage, filteredStocks.length)} of {filteredStocks.length}
+          </span>
+
+          <div className="flex items-center space-x-1">
+            <span>Rows per page:</span>
+            <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} className="w-[40px] text-center border rounded-md">
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+
+            <button onClick={handlePreviousPage} disabled={currentPage === 1} className={`w-[24px] h-[20px] rounded-md bg-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <img src={PaginationChevronLeftIcon} alt="Previous" />
+            </button>
+            <span>
+              {currentPage}/{totalPages}
+            </span>
+            <button onClick={handleNextPage} disabled={currentPage === totalPages} className={`w-[24px] h-[20px] rounded-md bg-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <img src={PaginationChevronRightIcon} alt="Next" />
+            </button>
           </div>
         </div>
       </div>
