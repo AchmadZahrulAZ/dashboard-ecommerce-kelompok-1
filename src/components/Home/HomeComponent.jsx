@@ -20,7 +20,7 @@ const HomeComponent = () => {
           <RevanueComponent />
         </div>
         <div className="col-md-3">
-          <div class="card">
+          <div className="card">
             <BestItemSalesComponent />
           </div>
         </div>

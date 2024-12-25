@@ -63,7 +63,7 @@ const RevanueComponent = () => {
         <div className="flex items-center justify-between px-4">
           <h4 className="mb-3 text-title-large">Revenue 2024</h4>
           <div className="flex items-center gap-1">
-            <div class="rounded-full bg-primarycstm w-3 h-3"></div>
+            <div className="rounded-full bg-primarycstm w-3 h-3"></div>
             <p className="ml-2 text-primarycstm">Sales</p>
           </div>
         </div>

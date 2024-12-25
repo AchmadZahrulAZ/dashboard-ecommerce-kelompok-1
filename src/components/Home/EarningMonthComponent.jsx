@@ -2,8 +2,8 @@ import React from "react";
 
 const EarningMonthComponent = () => {
   return (
-    <div class="card">
-      <div class="card-body py-9">
+    <div className="card">
+      <div className="card-body py-9">
         <div className="text-center d-flex flex-column">
           <div>
             <h4 className="text-title-large">Total earning this month</h4>
