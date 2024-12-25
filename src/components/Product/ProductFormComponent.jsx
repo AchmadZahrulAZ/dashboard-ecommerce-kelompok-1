@@ -95,7 +95,7 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
               <button
                 type="button"
                 data-bs-toggle="modal"
-                data-bs-target="#modalFormCategory"
+                data-bs-target="#modalFormProduct"
                 className="gap-2 d-flex align-items-center text-primarycstm"
               >
                 <img src={Plus} alt="Add Button" />

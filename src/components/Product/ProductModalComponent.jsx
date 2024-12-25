@@ -21,9 +21,9 @@ const ProductModalComponent = () => {
   return (
     <div
       className="modal fade"
-      id="modalFormCategory"
+      id="modalFormProduct"
       tabIndex="-1"
-      aria-labelledby="modalFormCategoryLabel"
+      aria-labelledby="modalFormProductLabel"
       aria-hidden="true"
     >
       <div className="modal-dialog modal-dialog-centered modal-md">
@@ -31,7 +31,7 @@ const ProductModalComponent = () => {
           <div className="border-0 modal-header">
             <h1
               className="font-semibold modal-title fs-5 "
-              id="modalFormCategoryLabel"
+              id="modalFormProductLabel"
             >
               Add Varian
             </h1>
