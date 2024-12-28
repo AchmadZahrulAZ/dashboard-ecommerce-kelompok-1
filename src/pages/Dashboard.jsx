@@ -15,7 +15,6 @@ import PromotionPage from "./PromotionPage";
 import RatingPage from "./RatingPage";
 import StockPage from "./StockPage";
 
-// Helper Component to get the current route and pass it to Sidebar
 const DashboardWithSidebar = () => {
   const location = useLocation();
 
@@ -56,10 +55,9 @@ const DashboardWithSidebar = () => {
   };
 
   return (
-    <div className="flex items-start justify-center lg:justify-between">
+    <div className="flex min-h-screen">
       <SidebarComponent activePage={getActivePage()} />
-      <div className="flex flex-col w-full min-h-screen px-3 py-12 bg-backgroundcstm">
-        {/* Pass activePage dynamically */}
+      <div className="flex-grow bg-backgroundcstm px-3 py-12">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />

@@ -6,7 +6,7 @@ import BestItemSalesComponent from "./BestItemSalesComponent";
 
 const HomeComponent = () => {
   return (
-    <div className="container">
+    <div className="w-full min-h-full flex flex-col px-4">
       <div className="row">
         <div className="col-md-9">
           <SummaryComponent />
