@@ -6,9 +6,13 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Import Bootstrap JS
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
 import "./index.css"; // Import Tailwind CSS
 import App from "./App.jsx";
+import { Provider } from "react-redux";
+import { store } from "./redux/index.js";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
+  <Provider store={store}>
+    <StrictMode>
+      <App />
+    </StrictMode>
+  </Provider>
 );
