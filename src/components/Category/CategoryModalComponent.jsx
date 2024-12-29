@@ -7,6 +7,7 @@ import "../Product/ProductStyles.css";
 
 const CategoryModalComponent = ({ isEdit }) => {
   const [image, setImage] = useState(null);
+  const [name, setName] = useState("Electronic");
   const handleSaveOrUpdate = () => {
     Swal.fire({
       title: isEdit
@@ -49,7 +50,8 @@ const CategoryModalComponent = ({ isEdit }) => {
                   className="bg-gray-100 form-control"
                   id="name"
                   name="name"
-                  value={isEdit ? "Elektronik" : ""}
+                  value={isEdit ? name : ""}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="mb-3">
