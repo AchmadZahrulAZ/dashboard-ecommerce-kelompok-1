@@ -95,7 +95,7 @@ const OrdersModalComponent = ({ status }) => {
                     </tr>
                   ))}
                   <tr>
-                    <td colspan="2"></td>
+                    <td colSpan="2"></td>
                     <td>Sub Total </td>
                     <td>${totalPrice}</td>
                   </tr>
