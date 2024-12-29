@@ -58,12 +58,12 @@ const data = [
 
 const RevanueComponent = () => {
   return (
-    <div className="card ">
-      <div className="px-10 py-9 card-body">
+    <div className="card lg:h-[400px]">
+      <div className="px-6 py-9 card-body">
         <div className="flex items-center justify-between px-4">
           <h4 className="mb-3 text-title-large">Revenue 2024</h4>
           <div className="flex items-center gap-1">
-            <div className="rounded-full bg-primarycstm w-3 h-3"></div>
+            <div className="w-3 h-3 rounded-full bg-primarycstm"></div>
             <p className="ml-2 text-primarycstm">Sales</p>
           </div>
         </div>
