@@ -1,0 +1,21 @@
+/* 
+  This hides the default native date picker icon in Chrome, Safari, and Edge,
+  so only your custom DateIcon is visible.
+*/
+::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  /* 
+    For Firefox, there's typically no default icon shown if you use type="date".
+    If needed, you can add additional selectors for older browsers.
+  */
+  
+  /*
+    Note on placeholders: 
+    The native date picker often overrides the placeholder with its own
+    “mm/dd/yyyy” or locale-specific format. If you need a custom placeholder 
+    behavior, you'll need a library-based date picker instead.
+  */
+  

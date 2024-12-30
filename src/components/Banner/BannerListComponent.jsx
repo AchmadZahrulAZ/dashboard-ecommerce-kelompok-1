@@ -12,46 +12,7 @@ import EditIcon from '../../assets/icons/product/SolidPencil.svg';
 import DeleteIcon from '../../assets/icons/product/SolidTrash.svg';
 import Swal from 'sweetalert2';
 
-const BannerListComponent = () => {
-  const [banners, setBanners] = useState([
-    {
-      id: 1,
-      bannerPicture: DummyBanner,
-      bannerName: 'Promosi Akhir Tahun',
-      targetURL: 'www.e-commerce.com',
-      releaseDate: '09/11/2024',
-      endDate: '12/11/2024',
-      published: true,
-    },
-    {
-      id: 2,
-      bannerPicture: DummyBanner,
-      bannerName: 'Produk Baru',
-      targetURL: 'www.e-commerce.com',
-      releaseDate: '08/11/2024',
-      endDate: '11/11/2024',
-      published: false,
-    },
-    {
-      id: 3,
-      bannerPicture: DummyBanner,
-      bannerName: 'Diskon 30%',
-      targetURL: 'www.e-commerce.com',
-      releaseDate: '07/11/2024',
-      endDate: '10/11/2024',
-      published: false,
-    },
-    {
-      id: 4,
-      bannerPicture: DummyBanner,
-      bannerName: 'Giveaway',
-      targetURL: 'www.e-commerce.com',
-      releaseDate: '03/11/2024',
-      endDate: '09/11/2024',
-      published: false,
-    },
-  ]);
-
+const BannerListComponent = ({ banners, setBanners }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
@@ -72,8 +33,14 @@ const BannerListComponent = () => {
   };
 
   const handleSwitchChange = (bannerId, newPublishedValue) => {
-    setBanners((prevBanners) => prevBanners.map((banner) => (banner.id === bannerId ? { ...banner, published: newPublishedValue } : banner)));
-
+    // 1) Immediately update the published state
+    setBanners((prevBanners) =>
+      prevBanners.map((banner) =>
+        banner.id === bannerId ? { ...banner, published: newPublishedValue } : banner
+      )
+    );
+  
+    // 2) If user just switched to UNPUBLISHED
     if (!newPublishedValue) {
       Swal.fire({
         title: 'Confirmation',
@@ -84,17 +51,66 @@ const BannerListComponent = () => {
         cancelButtonText: 'No',
         confirmButtonText: 'Yes',
         customClass: {
-          title: "my-title-class",
-          cancelButton: "swal2-cancel-outline",
-          confirmButton: "swal2-confirm-no-outline",
+          title: 'my-title-class',
+          cancelButton: 'swal2-cancel-outline',
+          confirmButton: 'swal2-confirm-no-outline',
         },
       }).then((result) => {
+        // 2a) If user clicked "No" => revert back to "published: true"
         if (!result.isConfirmed) {
-          setBanners((prevBanners) => prevBanners.map((banner) => (banner.id === bannerId ? { ...banner, published: true } : banner)));
+          setBanners((prevBanners) =>
+            prevBanners.map((banner) =>
+              banner.id === bannerId ? { ...banner, published: true } : banner
+            )
+          );
+        } else {
+          // 2b) If user clicked "Yes" => show success alert
+          Swal.fire({
+            title: 'This banner was successfully unpublished',
+            icon: 'success',
+            customClass: {
+              title: 'text-2xl font-bold',
+            },
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       });
     }
   };
+  
+
+  const handleDelete = (bannerId) => {
+    Swal.fire({
+      title: "Delete Banner?",
+      text: "Are you sure want to delete this banner?",
+      icon: "warning",
+      iconHtml: `<i class="bi bi-trash"></i>`,
+      customClass: {
+        title: "my-title-class",
+        cancelButton: "swal2-cancel-outline",
+        confirmButton: "swal2-confirm-no-outline",
+      },
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setBanners((prevBanners) => prevBanners.filter((b) => b.id !== bannerId));
+        Swal.fire({
+          title: "This banner was successfully deleted",
+          icon: "success",
+          customClass: {
+            title: "text-2xl font-bold",
+          },
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
+
 
   return (
     <div className="container">
@@ -155,7 +171,7 @@ const BannerListComponent = () => {
           {paginatedBanners.map((item) => (
             <div key={item.id} className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm py-4 border-b border-[#DBDCDE]">
               <div className="px-2">
-                <img src={item.bannerPicture} alt="Profile" className="w-[50px] h-[37.4px] rounded-sm" />
+                <img src={item.bannerPhoto || DummyBanner} alt="Profile" className="w-[50px] h-[37.4px] rounded-sm" />
               </div>
               <div className="px-2">{item.bannerName}</div>
               <div className="px-2">{item.targetURL}</div>
@@ -175,7 +191,7 @@ const BannerListComponent = () => {
                     <img src={EditIcon} alt="Edit" />
                   </button>
                 </Link>
-                <button>
+                <button onClick={() => handleDelete(item.id)}>
                   <img src={DeleteIcon} alt="Delete" />
                 </button>
               </div>
