@@ -138,14 +138,14 @@ const StockListComponent = ({ stocks, onEdit, onDetail, onDelete }) => {
                   <td>
                     <div className="flex gap-2">
                       {/* Detail Button */}
-                      <Link to="/stock/detail/:id">
+                      <Link to={"/stock/detail/" + stock.id}>
                         <button onClick={() => onDetail(stock)}>
                           <img src={DetailIcon} alt="Detail" />
                         </button>
                       </Link>
 
                       {/* Edit Button */}
-                      <Link to="/stock/edit/:id">
+                      <Link to={"/stock/edit/" + stock.id}>
                         <button onClick={() => onEdit(stock)}>
                           <img src={EditIcon} alt="Edit" />
                         </button>

@@ -66,13 +66,11 @@ const StockPage = () => {
   // Function to handle edit button click
   const handleEditClick = (stock) => {
     setSelectedStock(stock); // Set the stock to be edited
-    navigate(`/stock/edit/${stock.id}`); // Navigate to edit form
   };
 
   // Function to handle detail button click
   const handleDetailClick = (stock) => {
     setSelectedStock(stock); // Set the stock to be viewed
-    navigate(`/stock/detail/${stock.id}`); // Navigate to detail view
   };
 
   // Function to handle deleting a stock

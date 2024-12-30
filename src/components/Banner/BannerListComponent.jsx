@@ -83,6 +83,11 @@ const BannerListComponent = () => {
         confirmButtonColor: '#d33',
         cancelButtonText: 'No',
         confirmButtonText: 'Yes',
+        customClass: {
+          title: "my-title-class",
+          cancelButton: "swal2-cancel-outline",
+          confirmButton: "swal2-confirm-no-outline",
+        },
       }).then((result) => {
         if (!result.isConfirmed) {
           setBanners((prevBanners) => prevBanners.map((banner) => (banner.id === bannerId ? { ...banner, published: true } : banner)));
@@ -160,12 +165,12 @@ const BannerListComponent = () => {
                 <input className="form-check-input" type="checkbox" role="switch" checked={item.published} onChange={(e) => handleSwitchChange(item.id, e.target.checked)} />
               </div>
               <div className="flex gap-2">
-                <Link to="/banner/detail/:id">
+                <Link to={"/banner/detail/" + item.id}>
                   <button>
                     <img src={DetailIcon} alt="Detail" />
                   </button>
                 </Link>
-                <Link to="/banner/edit/:id">
+                <Link to={"/banner/edit/" + item.id}>
                   <button>
                     <img src={EditIcon} alt="Edit" />
                   </button>
