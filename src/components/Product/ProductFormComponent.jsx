@@ -1,16 +1,82 @@
-import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Download from "../../assets/icons/product/Download.svg";
 import Right from "../../assets/icons/rating/Right.svg";
 import Plus from "../../assets/icons/product/Plus.svg";
 import LeftForm from "../../assets/icons/product/LeftForm.svg";
+import PlusElipse from "../../assets/icons/product/PlusElipse.svg";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import ItemProductComponent from "./ItemProductComponent";
 import ProductModalComponent from "./ProductModalComponent";
 
-const ProductFormComponent = ({ isEdit, isDetail }) => {
+const ProductFormComponent = ({
+  isAdd,
+  isEdit,
+  isDetail,
+  product,
+  onAddProduct,
+  onEditProduct,
+}) => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [images, setImages] = useState([]);
+  const [varians, setVarians] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    category: "",
+    sku: "",
+    stock: 0,
+    price: 0,
+    description: "",
+  });
+
+  useEffect(() => {
+    if (isEdit || isDetail) {
+      setFormData({
+        name: product.name,
+        category: product.category,
+        sku: product.sku,
+        stock: product.stock,
+        price: product.price,
+        description: product.description,
+      });
+      setImages(product.image);
+      setVarians(product.product_variant.map((v) => v.varian));
+    }
+  }, [isEdit, isDetail, product]);
+
+  const handleImageChange = (e) => {
+    const selectedImages = Array.from(e.target.files);
+    setImages([...images, ...selectedImages]);
+  };
+
+  const handleDeleteImage = (index) => {
+    const updatedImages = [...images];
+    updatedImages.splice(index, 1);
+    setImages(updatedImages);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newProduct = {
+      ...formData,
+      image: images,
+      product_variant: varians.map((varian) => ({ varian })),
+    };
+
+    if (isAdd) {
+      onAddProduct(newProduct);
+    } else if (isEdit) {
+      onEditProduct({ ...newProduct, id: product.id });
+    }
+    navigate("/product");
+  };
+
   return (
     <div className="container">
       <div className="p-10 card">
@@ -44,7 +110,7 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
           </div>
         </div>
         <hr className="my-3 border-t border-gray-300" />
-        <form className="row g-3">
+        <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-6">
             <label htmlFor="name" className="form-label">
               Product Name
@@ -55,6 +121,8 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
               className="bg-gray-100 form-control"
               id="name"
               name="name"
+              value={formData.name}
+              onChange={handleChange}
               readOnly={isDetail}
             />
           </div>
@@ -66,12 +134,14 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
               className="bg-gray-100 form-select"
               id="category"
               name="category"
+              value={formData.category}
+              onChange={handleChange}
               disabled={isDetail}
             >
               <option value="">Select a Category</option>
-              <option value="category1">Category 1</option>
-              <option value="category2">Category 2</option>
-              <option value="category3">Category 3</option>
+              <option value="Electronic">Electronic</option>
+              <option value="Home & Lifestle">Home & Lifestle</option>
+              <option value="Sports">Sports</option>
             </select>
           </div>
           <div className="col-md-6">
@@ -84,6 +154,8 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
               className="bg-gray-100 form-control"
               id="sku"
               name="sku"
+              value={formData.sku}
+              onChange={handleChange}
               readOnly={isDetail}
             />
           </div>
@@ -91,28 +163,71 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
             <label htmlFor="varian" className="form-label">
               Product Varian
             </label>
-            <div className="form-control">
-              <button
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#modalFormProduct"
-                className="gap-2 d-flex align-items-center text-primarycstm"
-              >
-                <img src={Plus} alt="Add Button" />
-                Add New Product Varian
-              </button>
-            </div>
+
+            {varians.length > 0 ? (
+              <div className="row">
+                <div className="col-md-11">
+                  <div className="row">
+                    {varians.map((varian, index) => (
+                      <div className="col-md-6" key={index}>
+                        <div className="d-flex align-items-center">
+                          <input
+                            type="text"
+                            placeholder="Enter Product Varian"
+                            className="mb-2 bg-gray-100 form-control"
+                            id="varian"
+                            name="varian"
+                            value={varian}
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="col-md">
+                  {!isDetail && (
+                    <button
+                      type="button"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalFormProduct"
+                      disabled={isDetail}
+                    >
+                      <img src={PlusElipse} alt="add varian" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="form-control">
+                {!isDetail && (
+                  <button
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalFormProduct"
+                    className="gap-2 d-flex align-items-center text-primarycstm"
+                  >
+                    <img src={Plus} alt="Add Button" />
+                    Add New Product Varian
+                  </button>
+                )}
+              </div>
+            )}
           </div>
+
           <div className="col-md-6">
             <label htmlFor="stock" className="form-label">
               Initial Product Stock
             </label>
             <input
-              type="text"
+              type="number"
               placeholder="Enter Initial Product Stock"
               className="bg-gray-100 form-control"
               id="stock"
               name="stock"
+              value={formData.stock}
+              onChange={handleChange}
               readOnly={isDetail}
             />
           </div>
@@ -121,11 +236,13 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
               Price
             </label>
             <input
-              type="text"
+              type="number"
               placeholder="Enter Price"
               className="bg-gray-100 form-control"
               id="price"
               name="price"
+              value={formData.price}
+              onChange={handleChange}
               readOnly={isDetail}
             />
           </div>
@@ -136,6 +253,11 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
             </label>
             <CKEditor
               editor={ClassicEditor}
+              data={formData.description}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                setFormData({ ...formData, description: data });
+              }}
               config={{
                 licenseKey: "GPL",
                 toolbar: {
@@ -154,7 +276,7 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
                     "indent",
                     "outdent",
                     "|",
-                    "imageUpload", // Menambahkan image upload
+                    "imageUpload",
                   ],
                 },
                 placeholder: "Ketik deskripsi di sini...",
@@ -167,7 +289,7 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
           </div>
 
           {isDetail !== true && (
-            <div className="mt-4 col-md-6">
+            <div className="mt-4 col-md-12 col-lg-6">
               <div className="p-4 bg-gray-100 card">
                 <h5 className="mb-4">Product Photo</h5>
                 <label
@@ -187,6 +309,7 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
                     name="upload"
                     className="hidden"
                     readOnly={isDetail}
+                    onChange={handleImageChange}
                   />
                   <p>SVG, PNG, JPG</p>
                   <p className="text-gray-400">(max, 800x400px)</p>
@@ -195,31 +318,30 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
             </div>
           )}
 
-          {isEdit && (
+          {images && (
             <div className="mt-4 col-md-12">
               <div className="row">
-                <div className="col-md">
-                  <ItemProductComponent defaultItem={true} />
-                </div>
-                <div className="col-md">
-                  <ItemProductComponent />
-                </div>
-                <div className="col-md">
-                  <ItemProductComponent />
-                </div>
-                <div className="col-md">
-                  <ItemProductComponent />
-                </div>
-                <div className="col-md">
-                  <ItemProductComponent />
-                </div>
+                {images.map((image, index) => (
+                  <div className="col-md-2" key={index}>
+                    <ItemProductComponent
+                      image={image}
+                      onDelete={handleDeleteImage}
+                      index={index}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
           <div className="flex flex-row-reverse gap-3 col-12">
             {isDetail && (
-              <button className="w-32 btn btn-secondary">Back</button>
+              <button
+                className="w-32 btn btn-secondary"
+                onClick={() => navigate("/product")}
+              >
+                Back
+              </button>
             )}
 
             {isEdit && (
@@ -227,7 +349,12 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
                 <button type="submit" className="w-32 btn btn-danger">
                   Save
                 </button>
-                <button className="w-32 btn btn-outline-danger">Cancel</button>
+                <button
+                  className="w-32 btn btn-outline-danger"
+                  onClick={() => navigate("/product")}
+                >
+                  Cancel
+                </button>
               </>
             )}
 
@@ -236,13 +363,18 @@ const ProductFormComponent = ({ isEdit, isDetail }) => {
                 <button type="submit" className="w-32 btn btn-danger">
                   Add Product
                 </button>
-                <button className="w-32 btn btn-outline-danger">Cancel</button>
+                <button
+                  className="w-32 btn btn-outline-danger"
+                  onClick={() => navigate("/product")}
+                >
+                  Cancel
+                </button>
               </>
             )}
           </div>
         </form>
       </div>
-      <ProductModalComponent />
+      <ProductModalComponent varians={varians} setVarians={setVarians} />
     </div>
   );
 };

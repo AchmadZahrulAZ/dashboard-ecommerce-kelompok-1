@@ -3,8 +3,7 @@ import PlusElipse from "../../assets/icons/product/PlusElipse.svg";
 import "../Product/ProductStyles.css";
 import DeleteIcon from "../../assets/icons/product/SolidTrash.svg";
 
-const ProductModalComponent = () => {
-  const [varians, setVarians] = useState([]);
+const ProductModalComponent = ({ varians, setVarians }) => {
   const [varianName, setVarianName] = useState("");
 
   const handleAddVarian = () => {
@@ -59,10 +58,10 @@ const ProductModalComponent = () => {
             <div>
               {/* List Varian */}
               {varians.map((varian, index) => (
-                <div className="mb-3">
+                <div className="mb-1" key={index}>
                   <div
                     key={index}
-                    className="flex justify-between bg-red-100 form-control"
+                    className="flex justify-between hover:bg-red-100 form-control"
                   >
                     <p>{varian}</p>
                     <button
