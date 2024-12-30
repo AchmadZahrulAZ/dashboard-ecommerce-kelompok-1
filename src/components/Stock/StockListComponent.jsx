@@ -62,7 +62,7 @@ const StockListComponent = ({ stocks, onEdit, onDetail, onDelete }) => {
   };
 
   return (
-    <div className="container">  
+    <div className="container">
       <div className="p-10 card">
         {/* Title Section */}
         <div className="flex items-center justify-between">
@@ -138,14 +138,14 @@ const StockListComponent = ({ stocks, onEdit, onDetail, onDelete }) => {
                   <td>
                     <div className="flex gap-2">
                       {/* Detail Button */}
-                      <Link to="/stock/detail/:id">
+                      <Link to={"/stock/detail/" + stock.id}>
                         <button onClick={() => onDetail(stock)}>
                           <img src={DetailIcon} alt="Detail" />
                         </button>
                       </Link>
 
                       {/* Edit Button */}
-                      <Link to="/stock/edit/:id">
+                      <Link to={"/stock/edit/" + stock.id}>
                         <button onClick={() => onEdit(stock)}>
                           <img src={EditIcon} alt="Edit" />
                         </button>
@@ -165,25 +165,50 @@ const StockListComponent = ({ stocks, onEdit, onDetail, onDelete }) => {
 
         {/* Pagination Section */}
         <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-          <span>
-            {currentPage}-{Math.min(currentPage * itemsPerPage, filteredStocks.length)} of {filteredStocks.length}
-          </span>
-          <div className="flex items-center space-x-1">
-            <span>Rows per page:</span>
-            <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} className="w-[40px] text-center border rounded-md">
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-            <button onClick={handlePreviousPage} disabled={currentPage === 1} className={`w-[24px] h-[20px] rounded-md bg-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              <img src={PaginationChevronLeftIcon} alt="Previous" />
-            </button>
+          {/* Left Section: Displaying data range */}
+          <div>
             <span>
-              {currentPage}/{totalPages}
+              {currentPage * itemsPerPage - (itemsPerPage - 1)}-{Math.min(currentPage * itemsPerPage, filteredStocks.length)} of {filteredStocks.length}
             </span>
-            <button onClick={handleNextPage} disabled={currentPage === totalPages} className={`w-[24px] h-[20px] rounded-md bg-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              <img src={PaginationChevronRightIcon} alt="Next" />
-            </button>
+          </div>
+
+          {/* Right Section: Pagination controls and Rows per page */}
+          <div className="flex items-center space-x-4">
+            {/* Dropdown Rows per page */}
+            <div className="flex items-center space-x-1">
+              <span>Rows per page:</span>
+              <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} className="w-[50px] text-center border border-[#3C4858] rounded-md">
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center space-x-2">
+              {/* Previous Page Button */}
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`w-[24px] h-[20px] rounded-[6px] flex items-center justify-center border ${currentPage === 1 ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed' : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'}`}
+              >
+                <img src={PaginationChevronLeftIcon} alt="Previous" className={currentPage === 1 ? 'opacity-50' : 'opacity-100'} />
+              </button>
+
+              {/* Current Page and Total Pages */}
+              <span className="font-medium">
+                {currentPage}/{totalPages}
+              </span>
+
+              {/* Next Page Button */}
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`w-[24px] h-[20px] rounded-[6px] flex items-center justify-center border ${currentPage === totalPages ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed' : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'}`}
+              >
+                <img src={PaginationChevronRightIcon} alt="Next" className={currentPage === totalPages ? 'opacity-25' : 'opacity-50'} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

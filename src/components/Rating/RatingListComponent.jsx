@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import CalendarIcon from '../../assets/icons/rating/Calendar.svg';
 import DropdownIcon from '../../assets/icons/rating/DropdownBig.svg';
 import SearchIcon from '../../assets/icons/rating/Search.svg';
-import FilterIcon from '../../assets/icons/rating/Filter.svg';
-import Right from '../../assets/icons/rating/Right.svg';
+import SortIcon from '../../assets/icons/product/SortIcon.svg';
+import SortActiveIcon from '../../assets/icons/product/SortIconActive.svg';
 import ChevronRightIcon from '../../assets/icons/rating/WhiteChevronRight.svg';
 import ChevronDownIcon from '../../assets/icons/rating/WhiteChevronDown.svg';
 import PaginationChevronLeftIcon from '../../assets/icons/rating/PaginationChevronLeft.svg';
@@ -80,17 +80,15 @@ const RatingListComponent = () => {
   return (
     <div className="container">
       <div className="p-10 card">
-        {/* Title Section */}
         <div>
           <h2 className="font-lato font-bold text-[#030406] text-2xl">Rating</h2>
           <div className="flex items-center text-sm font-lato text-[#DB4444] mt-2">
             <span>Home</span>
-            <img src={Right} alt="Chevron" className="mx-2" />
+            <img src={PaginationChevronRightIcon} alt="Chevron" className="mx-2" />
             <span className="font-semibold">Rating</span>
           </div>
         </div>
 
-        {/* Second Row */}
         <div className="flex items-center space-x-4 mt-6">
           <button className="w-[48px] h-[40px] rounded-md border bg-white flex items-center justify-center">
             <img src={CalendarIcon} alt="Calendar" />
@@ -105,34 +103,16 @@ const RatingListComponent = () => {
           </div>
         </div>
 
-        {/* Third Row: Titles and Data */}
         <div className="mt-6">
-          {/* Title Row */}
           <div className="grid grid-cols-[1fr_1fr_1fr_1fr_2fr_1fr] text-[#111111] font-lato font-bold text-sm py-2">
-            <div className="flex items-center space-x-2 px-2">
-              Profile Picture
-              <img src={FilterIcon} alt="Filter" className="w-2 ml-2" />
-            </div>
-            <div className="flex items-center space-x-2 px-2">
-              User Name
-              <img src={FilterIcon} alt="Filter" className="w-2 ml-2" />
-            </div>
-            <div className="flex items-center space-x-2 px-2">
-              Rating
-              <img src={FilterIcon} alt="Filter" className="w-2 ml-2" />
-            </div>
-            <div className="flex items-center space-x-2 px-2">
-              Review Date
-              <img src={FilterIcon} alt="Filter" className="w-2 ml-2" />
-            </div>
-            <div className="flex items-center space-x-2 px-2">
-              Review
-              <img src={FilterIcon} alt="Filter" className="w-2 ml-2" />
-            </div>
-            <div className="flex items-center space-x-2 px-2">Action</div>
+            <div className="px-2">Profile Picture</div>
+            <div className="px-2">User Name</div>
+            <div className="px-2">Rating</div>
+            <div className="px-2">Review Date</div>
+            <div className="px-2">Review</div>
+            <div className="px-2">Action</div>
           </div>
 
-          {/* Data Rows */}
           {currentData.map((item, index) => (
             <div key={item.id} className="grid grid-cols-[1fr_1fr_1fr_1fr_2fr_1fr] items-center text-sm py-4 border-b border-[#DBDCDE]">
               <div className="px-2">
@@ -143,10 +123,7 @@ const RatingListComponent = () => {
               <div className="px-2">{item.reviewDate}</div>
               <div className="px-2">{expandedRow === index ? item.fullReview : item.review}</div>
               <div className="px-2">
-                <button
-                  className="w-[28px] h-[28px] rounded-lg bg-[#111111] flex items-center justify-center"
-                  onClick={() => toggleRow(index)}
-                >
+                <button className="w-[28px] h-[28px] rounded-lg bg-[#111111] flex items-center justify-center" onClick={() => toggleRow(index)}>
                   <img src={expandedRow === index ? ChevronDownIcon : ChevronRightIcon} alt="Toggle" />
                 </button>
               </div>
@@ -154,27 +131,41 @@ const RatingListComponent = () => {
           ))}
         </div>
 
-        {/* Pagination */}
+        {/* Pagination Section */}
         <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-          <span>
-            {currentPage}-{Math.min(currentPage * itemsPerPage, data.length)} of {data.length}
-          </span>
-          <div className="flex items-center space-x-1">
-            <span>Rows per page:</span>
-            <select value={itemsPerPage} onChange={handleItemsPerPageChange} className="w-[40px] text-center border rounded-md">
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-            <button onClick={handlePreviousPage} disabled={currentPage === 1} className={`w-[24px] h-[20px] rounded-md bg-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              <img src={PaginationChevronLeftIcon} alt="Previous" />
-            </button>
+          <div>
             <span>
-              {currentPage}/{totalPages}
+              {currentPage * itemsPerPage - (itemsPerPage - 1)}-{Math.min(currentPage * itemsPerPage, data.length)} of {data.length}
             </span>
-            <button onClick={handleNextPage} disabled={currentPage === totalPages} className={`w-[24px] h-[20px] rounded-md bg-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              <img src={PaginationChevronRightIcon} alt="Next" />
-            </button>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <span>Rows per page:</span>
+              <select value={itemsPerPage} onChange={handleItemsPerPageChange} className="w-[50px] text-center border border-[#3C4858] rounded-md">
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`w-[24px] h-[20px] rounded-[6px] flex items-center justify-center border ${currentPage === 1 ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed' : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'}`}
+              >
+                <img src={PaginationChevronLeftIcon} alt="Previous" className={currentPage === 1 ? 'opacity-50' : 'opacity-100'} />
+              </button>
+              <span className="font-medium">
+                {currentPage}/{totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`w-[24px] h-[20px] rounded-[6px] flex items-center justify-center border ${currentPage === totalPages ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed' : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'}`}
+              >
+                <img src={PaginationChevronRightIcon} alt="Next" className={currentPage === totalPages ? 'opacity-25' : 'opacity-50'} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -183,3 +174,4 @@ const RatingListComponent = () => {
 };
 
 export default RatingListComponent;
+

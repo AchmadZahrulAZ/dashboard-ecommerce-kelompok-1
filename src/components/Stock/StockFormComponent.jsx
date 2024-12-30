@@ -84,7 +84,7 @@ const StockFormComponent = ({
         </div>
 
         {/* Breadcrumb */}
-        <div className="flex items-center text-sm font-lato text-[#DB4444] mb-4">
+        <div className="flex items-center text-sm font-lato text-[#DB4444] mb-2">
           <span>Home</span>
           <img src={ChevronRightIcon} alt="Chevron Right" className="mx-2" />
           <span>Stock</span>
