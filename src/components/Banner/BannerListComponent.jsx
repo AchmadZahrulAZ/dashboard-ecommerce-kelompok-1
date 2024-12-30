@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import DropdownIcon from '../../assets/icons/rating/DropdownBig.svg';
 import FilterIcon from '../../assets/icons/rating/Filter.svg';
-import Right from '../../assets/icons/rating/Right.svg';
-import PaginationChevronDownIcon from '../../assets/icons/rating/PaginationChevronDown.svg';
+import SortIcon from '../../assets/icons/product/SortIcon.svg';
+import SortActiveIcon from '../../assets/icons/product/SortIconActive.svg';
 import PaginationChevronLeftIcon from '../../assets/icons/rating/PaginationChevronLeft.svg';
 import PaginationChevronRightIcon from '../../assets/icons/rating/PaginationChevronRight.svg';
 import DummyBanner from '../../assets/images/banner/DummyBanner.png';
@@ -52,24 +52,37 @@ const BannerListComponent = () => {
     },
   ]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const totalPages = Math.ceil(banners.length / itemsPerPage);
+
+  const paginatedBanners = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = currentPage * itemsPerPage;
+    return banners.slice(startIndex, endIndex);
+  }, [banners, currentPage, itemsPerPage]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
   const handleSwitchChange = (bannerId, newPublishedValue) => {
     setBanners((prevBanners) => prevBanners.map((banner) => (banner.id === bannerId ? { ...banner, published: newPublishedValue } : banner)));
 
-    // confirmation alert
     if (!newPublishedValue) {
       Swal.fire({
         title: 'Confirmation',
-        text: 'Are you sure want to unpublish this banner? ',
+        text: 'Are you sure want to unpublish this banner?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonText: 'No',
         confirmButtonText: 'Yes',
-        customClass: {
-          title: 'my-title-class',
-          cancelButton: 'swal2-cancel-outline',
-          confirmButton: 'swal2-confirm-no-outline',
-        },
       }).then((result) => {
         if (!result.isConfirmed) {
           setBanners((prevBanners) => prevBanners.map((banner) => (banner.id === bannerId ? { ...banner, published: true } : banner)));
@@ -81,7 +94,7 @@ const BannerListComponent = () => {
   return (
     <div className="container">
       <div className="p-10 card">
-        {/* Title Section */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-lato font-bold text-[#030406] text-2xl">Banner Management</h2>
@@ -96,7 +109,7 @@ const BannerListComponent = () => {
           </Link>
         </div>
 
-        {/* Second Row */}
+        {/* Filter */}
         <div className="flex items-center space-x-4 mt-6">
           <div className="flex items-center w-[250px] h-[40px] border rounded-md">
             <input type="text" placeholder="Select Filter" className="w-full px-4 text-sm outline-none" />
@@ -104,9 +117,8 @@ const BannerListComponent = () => {
           </div>
         </div>
 
-        {/* Third Row: Titles and Data */}
+        {/* Table */}
         <div className="mt-4 table-responsive">
-          {/* Title Row */}
           <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr] text-[#111111] font-lato font-bold text-sm py-2">
             <div className="flex items-center space-x-2 px-2">
               Banner Picture
@@ -135,8 +147,7 @@ const BannerListComponent = () => {
             <div className="flex items-center space-x-2 px-2">Action</div>
           </div>
 
-          {/* Data Rows */}
-          {banners.map((item) => (
+          {paginatedBanners.map((item) => (
             <div key={item.id} className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm py-4 border-b border-[#DBDCDE]">
               <div className="px-2">
                 <img src={item.bannerPicture} alt="Profile" className="w-[50px] h-[37.4px] rounded-sm" />
@@ -145,50 +156,72 @@ const BannerListComponent = () => {
               <div className="px-2">{item.targetURL}</div>
               <div className="px-2">{item.releaseDate}</div>
               <div className="px-2">{item.endDate}</div>
-              <td>
-                <div className=" form-check form-switch custom-switch form-switch-success">
-                  <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked={banners.published} onChange={(e) => handleSwitchChange(banners.id, e.target.checked)} />
-                </div>
-              </td>
-              <td>
-                <div className="flex gap-2">
-                  {/* Detail Button */}
-                  <Link to="/banner/detail/:id">
-                    <button>
-                      <img src={DetailIcon} alt="Detail" />
-                    </button>
-                  </Link>
-
-                  {/* Edit Button */}
-                  <Link to="/banner/edit/:id">
-                    <button>
-                      <img src={EditIcon} alt="Edit" />
-                    </button>
-                  </Link>
-
-                  {/* Delete Button */}
+              <div className="form-check form-switch custom-switch form-switch-success">
+                <input className="form-check-input" type="checkbox" role="switch" checked={item.published} onChange={(e) => handleSwitchChange(item.id, e.target.checked)} />
+              </div>
+              <div className="flex gap-2">
+                <Link to="/banner/detail/:id">
                   <button>
-                    <img src={DeleteIcon} alt="Delete" />
+                    <img src={DetailIcon} alt="Detail" />
                   </button>
-                </div>
-              </td>
+                </Link>
+                <Link to="/banner/edit/:id">
+                  <button>
+                    <img src={EditIcon} alt="Edit" />
+                  </button>
+                </Link>
+                <button>
+                  <img src={DeleteIcon} alt="Delete" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Pagination */}
+        {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-          <span>1-20 of 27</span>
+          {/* Left Section: Displaying data range */}
+          <div>
+            <span>
+              {currentPage * itemsPerPage - (itemsPerPage - 1)}-{Math.min(currentPage * itemsPerPage, banners.length)} of {banners.length}
+            </span>
+          </div>
+
+          {/* Right Section: Pagination controls and Rows per page */}
           <div className="flex items-center space-x-4">
-            <span>Rows per page: 20</span>
-            <img src={PaginationChevronDownIcon} alt="Dropdown" />
+            {/* Dropdown Rows per page */}
             <div className="flex items-center space-x-1">
-              <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                <img src={PaginationChevronLeftIcon} alt="Previous" />
+              <span>Rows per page:</span>
+              <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} className="w-[50px] text-center border border-[#3C4858] rounded-md">
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center space-x-2">
+              {/* Previous Page Button */}
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`w-[24px] h-[24px] rounded-[6px] flex items-center justify-center border ${currentPage === 1 ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed' : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'}`}
+              >
+                <img src={PaginationChevronLeftIcon} alt="Previous" className={currentPage === 1 ? 'opacity-50' : 'opacity-100'} />
               </button>
-              <span className="text-[#687182]">1/2</span>
-              <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                <img src={PaginationChevronRightIcon} alt="Next" />
+
+              {/* Current Page and Total Pages */}
+              <span className="font-medium">
+                {currentPage}/{totalPages}
+              </span>
+
+              {/* Next Page Button */}
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`w-[24px] h-[24px] rounded-[6px] flex items-center justify-center border ${currentPage === totalPages ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed' : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'}`}
+              >
+                <img src={PaginationChevronRightIcon} alt="Next" className={currentPage === totalPages ? 'opacity-25' : 'opacity-50'} />
               </button>
             </div>
           </div>
