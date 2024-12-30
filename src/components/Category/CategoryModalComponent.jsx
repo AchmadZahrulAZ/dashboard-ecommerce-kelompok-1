@@ -1,14 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Download from "../../assets/icons/product/Download.svg";
 import Image from "../../assets/icons/category/Image.svg";
 import DeleteIcon from "../../assets/icons/category/SolidTrashRed.svg";
 import Swal from "sweetalert2";
 import "../Product/ProductStyles.css";
 
-const CategoryModalComponent = ({ isEdit }) => {
+const CategoryModalComponent = ({ isEdit, category, onSaveOrUpdate }) => {
   const [image, setImage] = useState(null);
-  const [name, setName] = useState("Electronic");
+  const [name, setName] = useState(""); // Initialize name with empty string
+
+  useEffect(() => {
+    if (isEdit && category) {
+      setName(category.name);
+      setImage(category.icon);
+    } else {
+      // Reset state when modal is opened for adding category
+      setName("");
+      setImage(null);
+    }
+  }, [isEdit, category]);
+
   const handleSaveOrUpdate = () => {
+    const newCategory = {
+      id: isEdit ? category.id : `CTG-${Date.now()}`, // Generate unique ID if adding new
+      name: name,
+      icon: image,
+      published: true, // Set published as needed
+    };
+
+    onSaveOrUpdate(newCategory);
+
     Swal.fire({
       title: isEdit
         ? "This category was successfully updated"
@@ -20,6 +41,7 @@ const CategoryModalComponent = ({ isEdit }) => {
       showConfirmButton: false,
     });
   };
+
   return (
     <div
       className="modal fade"
@@ -50,7 +72,7 @@ const CategoryModalComponent = ({ isEdit }) => {
                   className="bg-gray-100 form-control"
                   id="name"
                   name="name"
-                  value={isEdit ? name : ""}
+                  value={name} // Use name state
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -66,7 +88,7 @@ const CategoryModalComponent = ({ isEdit }) => {
                       <p>
                         <span className="text-primarycstm ">
                           Click to upload
-                        </span>
+                        </span>{" "}
                         or drag and drop
                       </p>
                     </div>
@@ -75,7 +97,7 @@ const CategoryModalComponent = ({ isEdit }) => {
                       id="upload"
                       name="upload"
                       className="hidden"
-                      onChange={(e) => setImage(e.target.files[0])}
+                      onChange={(e) => setImage(e.target.files[0].name)}
                     />
                     <p>SVG, PNG, JPG</p>
                     <p className="text-gray-400">(max, 800x400px)</p>
@@ -87,10 +109,11 @@ const CategoryModalComponent = ({ isEdit }) => {
                   <div className="flex justify-between p-3 border rounded border-danger">
                     <div className="flex items-center gap-2">
                       <img src={Image} alt="icon Image" />
-                      <p>Icon-Categroy.jpg</p>
+                      <p>{image}</p>
                     </div>
                     <div>
-                      <button>
+                      <button onClick={() => setImage(null)}>
+                        {/* Remove image when button is clicked */}
                         <img src={DeleteIcon} alt="delete icon" />
                       </button>
                     </div>
