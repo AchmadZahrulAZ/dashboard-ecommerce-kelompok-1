@@ -74,8 +74,7 @@ const BannerPage = () => {
         <BannerFormComponent
           isEdit={isEdit}
           isDetail={isDetail}
-          setBanners={setBanners} // Pass the setBanners function
-          // banners={banners} // Optional, pass banners for editing or details
+          setBanners={setBanners}
           bannerData={selectedBanner}
         />
       )}
