@@ -73,7 +73,9 @@ const StockFormComponent = ({
       >
         {/* Header */}
         <div className="flex items-center mb-4">
-          <img src={BackIcon} alt="Back" className="mr-2" />
+          <button onClick={() => navigate("/stock")}>
+            <img src={BackIcon} alt="Back" className="mr-2"  />
+          </button>
           <h5 className="font-lato font-medium text-black text-lg">
             {isDetail
               ? "Detail Stock"
