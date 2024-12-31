@@ -2,9 +2,33 @@ import React, { useState } from 'react';
 import EyeIcon from '../../assets/icons/auth/Eye.svg';
 import HiddenEyeIcon from '../../assets/icons/auth/HiddenEye.svg';
 import AuthPhoto from '../../assets/images/auth/AuthPhoto.png';
+import { useNavigate } from 'react-router-dom';
 
 const SignUpComponent = () => {
+  const navigate = useNavigate(); // Uncomment if using react-router
   const [showPassword, setShowPassword] = useState(false);
+
+  // Local state for form fields
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Handle Sign Up
+  const handleSignUp = () => {
+    // Simple validation
+    if (!fullName || !email || !password) {
+      alert('Please fill all fields!');
+      return;
+    }
+
+    // Store user data in localStorage
+    const userData = { fullName, email, password };
+    localStorage.setItem('dummyUser', JSON.stringify(userData));
+    alert('Account created! You can now login.');
+
+    // Navigate to login page or do something else
+    navigate('/login');
+  };
 
   return (
     <div
@@ -28,6 +52,8 @@ const SignUpComponent = () => {
             type="text"
             placeholder="Full Name"
             className="w-[330px] h-[46px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] px-4"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
 
           {/* Email Address Input */}
@@ -35,6 +61,8 @@ const SignUpComponent = () => {
             type="email"
             placeholder="Email Address"
             className="w-[330px] h-[46px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] px-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           {/* Password Input */}
@@ -43,6 +71,8 @@ const SignUpComponent = () => {
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               className="w-full h-full bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] px-4 pr-10"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <img
               src={showPassword ? EyeIcon : HiddenEyeIcon}
@@ -54,7 +84,10 @@ const SignUpComponent = () => {
           </div>
 
           {/* Button */}
-          <button className="w-[330px] h-[46px] bg-[#DB4444] text-white rounded-[8px] font-lato font-bold">
+          <button
+            className="w-[330px] h-[46px] bg-[#DB4444] text-white rounded-[8px] font-lato font-bold"
+            onClick={handleSignUp}
+          >
             Get Started
           </button>
 

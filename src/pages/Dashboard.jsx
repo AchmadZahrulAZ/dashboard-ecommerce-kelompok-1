@@ -79,7 +79,7 @@ const DashboardWithSidebar = () => {
       <SidebarComponent activePage={getActivePage()} />
       <div className="flex-grow px-3 py-12 bg-backgroundcstm">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
 
           <Route path="/banner" element={<BannerPage />} />
