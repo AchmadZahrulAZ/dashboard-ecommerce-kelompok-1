@@ -1,25 +1,20 @@
-// App.jsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginComponent from './components/Auth/LoginComponent';
-import SignUpComponent from './components/Auth/SignUpComponent';
-import ForgotPasswordComponent from './components/Auth/ForgotPasswordComponent';
-import InputOTP from './components/Auth/InputOTP';
-import Dashboard from './pages/Dashboard';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginComponent />} />
-        <Route path="/login" element={<LoginComponent />} />
-        <Route path="/signup" element={<SignUpComponent />} />
-        <Route path="/forgot-password" element={<ForgotPasswordComponent />} />
-        <Route path="/input-otp" element={<InputOTP />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
-  );
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    // Get the token from localStorage on component mount
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  return token ? <Dashboard /> : <LoginPage />;
 };
 
 export default App;

@@ -106,7 +106,9 @@ const ProductFormComponent = ({
         <div className="flex items-center justify-between">
           <div>
             <div className="flex gap-3">
-              <img src={LeftForm} alt="left form icon" />
+              <button onClick={() => navigate("/product")}>
+                <img src={LeftForm} alt="left form icon" />
+              </button>
               <h2 className="font-lato font-bold text-[#030406] text-2xl">
                 {isDetail
                   ? "Detail Product"
