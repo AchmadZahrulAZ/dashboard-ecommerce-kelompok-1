@@ -162,7 +162,9 @@ const BannerFormComponent = ({ isEdit, isDetail, setBanners, bannerData }) => {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex gap-3">
-              <img src={LeftForm} alt="left form icon" />
+              <button onClick={() => navigate('/banner')}>
+                <img src={LeftForm} alt="Back" className="mr-2" />
+              </button>
               <h2 className="font-lato font-bold text-[#030406] text-2xl">{isDetail ? 'Detail Banner' : isEdit ? 'Edit Banner' : 'Add Banner'}</h2>
             </div>
 

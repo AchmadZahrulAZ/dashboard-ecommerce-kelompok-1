@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Right from '../../assets/icons/rating/Right.svg';
 import LeftForm from '../../assets/icons/product/LeftForm.svg';
@@ -13,26 +13,33 @@ const PromotionFormComponent = ({
 }) => {
   const navigate = useNavigate();
 
-  // Promotion Type can be "Direct Discount" or "Voucher Code"
+  // Fields
   const [promotionType, setPromotionType] = useState('');
-  const [promotionName, setPromotionName] = useState('');
   const [voucherCode, setVoucherCode] = useState('');
-  const [product, setProduct] = useState('');
+  const [promotionName, setPromotionName] = useState('');
+  // Multi-select for products:
+  const [product, setProduct] = useState([]); // store as an array
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [discount, setDiscount] = useState('');
+  const [discount, setDiscount] = useState(''); // e.g., "Amount : 50.000" or "Percentage : 20%"
   const [usageLimit, setUsageLimit] = useState('');
   const [showVoucherOnCheckout, setShowVoucherOnCheckout] = useState(false);
-
   const [error, setError] = useState('');
 
-  // Populate fields if we are in edit or detail mode
+  // Fill initial data if editing or detail
   useEffect(() => {
     if (promotionData) {
       setPromotionType(promotionData.promotionType || '');
-      setPromotionName(promotionData.promotionName || '');
       setVoucherCode(promotionData.voucherCode || '');
-      setProduct(promotionData.product || '');
+      setPromotionName(promotionData.promotionName || '');
+      // If the product was stored as a string, split it, else keep array
+      if (promotionData.product) {
+        setProduct(
+          Array.isArray(promotionData.product)
+            ? promotionData.product
+            : promotionData.product.split(', ')
+        );
+      }
       setStartDate(promotionData.startDate || '');
       setEndDate(promotionData.endDate || '');
       setDiscount(promotionData.discount || '');
@@ -41,44 +48,60 @@ const PromotionFormComponent = ({
     }
   }, [promotionData]);
 
-  // Handlers for date fields
+  // ---- Handling date fields ----
   const handleDateFocus = (e) => {
     e.target.type = 'date';
   };
-
   const handleDateBlur = (e) => {
     if (!e.target.value) {
       e.target.type = 'text';
     }
   };
 
-  const handleStartDateChange = (e) => {
-    const newStartDate = e.target.value; // format: YYYY-MM-DD
-    const formattedDate = formatDate(newStartDate); // convert to DD/MM/YYYY
-    setStartDate(formattedDate);
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`; // from YYYY-MM-DD to DD/MM/YYYY
+  };
 
-    // If endDate is set and is before the new start date, adjust it
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.target.value;
+    const formatted = formatDate(newStartDate);
+    setStartDate(formatted);
+
+    // Adjust end date if needed
     if (
       endDate &&
       new Date(endDate.split('/').reverse().join('-')) <
         new Date(newStartDate)
     ) {
-      setEndDate(formattedDate);
+      setEndDate(formatted);
     }
   };
 
   const handleEndDateChange = (e) => {
-    const newEndDate = e.target.value; // format: YYYY-MM-DD
-    const formattedDate = formatDate(newEndDate); // convert to DD/MM/YYYY
-    setEndDate(formattedDate);
+    const newEndDate = e.target.value;
+    const formatted = formatDate(newEndDate);
+    setEndDate(formatted);
   };
 
-  // Utility function to convert YYYY-MM-DD -> DD/MM/YYYY
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
+  // ---- Handling multi-select for products ----
+  const allProducts = [
+    'Laptop Pavilion',
+    'Laptop HP',
+    'Monitor 24inch',
+    'Keyboard Wireless',
+  ];
+  const toggleProductSelection = (prod) => {
+    if (product.includes(prod)) {
+      // remove
+      setProduct(product.filter(p => p !== prod));
+    } else {
+      // add
+      setProduct([...product, prod]);
+    }
   };
 
+  // ---- Submit ----
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -88,79 +111,70 @@ const PromotionFormComponent = ({
       return;
     }
 
-    // For Direct Discount
     if (promotionType === 'Direct Discount') {
-      if (!promotionName || !product || !startDate || !endDate || !discount || !usageLimit) {
+      if (!promotionName || !product.length || !startDate || !endDate || !discount || !usageLimit) {
         setError('Please fill all fields for Direct Discount.');
         return;
       }
     }
 
-    // For Voucher Code
     if (promotionType === 'Voucher Code') {
-      if (!voucherCode || !promotionName || !product || !startDate || !endDate || !discount || !usageLimit) {
+      if (
+        !voucherCode ||
+        !promotionName ||
+        !product.length ||
+        !startDate ||
+        !endDate ||
+        !discount ||
+        !usageLimit
+      ) {
         setError('Please fill all fields for Voucher Code.');
         return;
       }
     }
 
-    setError('');
+    // Create/Update object
+    const description =
+      promotionType === 'Direct Discount'
+        ? `Potongan ${discount} dengan pembelian di atas 200rb` // You can customize the text
+        : `Potongan ${discount} dengan pembelian di atas 100rb`; 
 
+    const newData = {
+      // If editing, preserve the ID. If new, create an ID.
+      id: promotionData?.id || Date.now(),
+      promotionType,
+      voucherCode: promotionType === 'Voucher Code' ? voucherCode : '',
+      promotionName,
+      product: product.join(', '), // store as string
+      startDate,
+      endDate,
+      discount,
+      usageLimit,
+      showVoucherOnCheckout: promotionType === 'Voucher Code' ? showVoucherOnCheckout : false,
+      description, // from your logic or a free text if you want
+      status: promotionData?.status || 'Active', // or Inactive
+      published: promotionData?.published !== undefined ? promotionData.published : true,
+    };
+
+    // If editing, replace. If adding, push new
     if (isEdit && promotionData) {
-      // Update existing promotion
-      const updatedPromotion = {
-        ...promotionData,
-        promotionType,
-        voucherCode,
-        promotionName,
-        product,
-        startDate,
-        endDate,
-        discount,
-        usageLimit,
-        showVoucherOnCheckout,
-      };
-
-      setPromotions((prev) =>
-        prev.map((p) => (p.id === promotionData.id ? updatedPromotion : p))
+      setPromotions(prev =>
+        prev.map(item => (item.id === promotionData.id ? newData : item))
       );
-
       Swal.fire({
         title: 'This promotion was successfully updated',
         icon: 'success',
-        showConfirmButton: false,
         timer: 1500,
-      }).then(() => {
-        navigate('/promotion');
-      });
+        showConfirmButton: false,
+      }).then(() => navigate('/promotion'));
     } else {
-      // Add new promotion
-      const newPromotion = {
-        id: Date.now(),
-        promotionType,
-        voucherCode,
-        promotionName,
-        product,
-        startDate,
-        endDate,
-        discount,
-        usageLimit,
-        showVoucherOnCheckout,
-        // default values
-        published: true,
-        status: 'Active', // or Inactive, depending on your logic
-      };
-
-      setPromotions((prevPromotions) => [...prevPromotions, newPromotion]);
-
+      setPromotions(prev => [...prev, newData]);
       Swal.fire({
-        title: `This promotion was successfully added`,
+        title: 'This promotion was successfully added',
         icon: 'success',
-        showConfirmButton: false,
         timer: 1500,
-      }).then(() => {
-        navigate('/promotion');
-      });
+        showConfirmButton: false,
+      }).then(() => navigate('/promotion'));
     }
   };
 
@@ -171,7 +185,9 @@ const PromotionFormComponent = ({
         <div className="flex items-center justify-between">
           <div>
             <div className="flex gap-3">
-              <img src={LeftForm} alt="left form icon" />
+              <button onClick={() => navigate('/banner')}>
+                <img src={LeftForm} alt="Back" className="mr-2" />
+              </button>
               <h2 className="font-lato font-bold text-[#030406] text-2xl">
                 {isDetail
                   ? 'Detail Promotion'
@@ -180,12 +196,11 @@ const PromotionFormComponent = ({
                   : 'Add Promotion'}
               </h2>
             </div>
-
             <div className="flex items-center text-sm font-lato text-[#DB4444] mt-2">
               <span>Home</span>
-              <img src={Right} alt="Chevron" className="mx-2" />
+              <img src={Right} alt="chevron" className="mx-2" />
               <span>Promotion</span>
-              <img src={Right} alt="Chevron" className="mx-2" />
+              <img src={Right} alt="chevron" className="mx-2" />
               <span className="font-semibold">
                 {isDetail
                   ? 'Detail Promotion'
@@ -198,25 +213,18 @@ const PromotionFormComponent = ({
         </div>
 
         {/* Divider */}
-        <div
-          className="my-4"
-          style={{ height: '1px', backgroundColor: '#DBDCDE', width: '100%' }}
-        ></div>
+        <div className="my-4 w-full" style={{ height: '1px', backgroundColor: '#DBDCDE' }}></div>
 
         {/* Form */}
         <form className="row g-3" onSubmit={handleSubmit}>
           {/* Promotion Type */}
           <div className="col-md-6">
-            <label htmlFor="promotionType" className="form-label">
-              Promotion Type
-            </label>
+            <label className="form-label">Promotion Type</label>
             <select
               className="bg-gray-100 form-select"
-              id="promotionType"
-              name="promotionType"
-              disabled={isDetail}
               value={promotionType}
-              onChange={(e) => setPromotionType(e.target.value)}
+              onChange={e => setPromotionType(e.target.value)}
+              disabled={isDetail}
             >
               <option value="">Select Promotion Type</option>
               <option value="Direct Discount">Direct Discount</option>
@@ -224,72 +232,60 @@ const PromotionFormComponent = ({
             </select>
           </div>
 
-          {/* VOUCHER CODE (Only if promotionType = Voucher Code) */}
+          {/* Voucher Code (only if promotionType = Voucher Code) */}
           {promotionType === 'Voucher Code' && (
             <div className="col-md-6">
-              <label htmlFor="voucherCode" className="form-label">
-                Voucher Code
-              </label>
+              <label className="form-label">Voucher Code</label>
               <input
                 type="text"
-                placeholder="Enter Voucher Code"
                 className="bg-gray-100 form-control"
-                id="voucherCode"
-                name="voucherCode"
-                readOnly={isDetail}
+                placeholder="e.g. MERDEKA1"
                 value={voucherCode}
-                onChange={(e) => setVoucherCode(e.target.value)}
+                onChange={e => setVoucherCode(e.target.value)}
+                readOnly={isDetail}
               />
             </div>
           )}
 
-          {/* PROMOTION NAME (Both types) */}
+          {/* Promotion Name */}
           <div className="col-md-6">
-            <label htmlFor="promotionName" className="form-label">
-              Promotion Name
-            </label>
+            <label className="form-label">Promotion Name</label>
             <input
               type="text"
-              placeholder="Enter Promotion Name"
               className="bg-gray-100 form-control"
-              id="promotionName"
-              name="promotionName"
-              readOnly={isDetail}
+              placeholder="e.g. Spesial Kemerdekaan"
               value={promotionName}
-              onChange={(e) => setPromotionName(e.target.value)}
+              onChange={e => setPromotionName(e.target.value)}
+              readOnly={isDetail}
             />
           </div>
 
-          {/* PRODUCT (Both types) */}
+          {/* Multi-select for Products */}
           <div className="col-md-6">
-            <label htmlFor="product" className="form-label">
-              Product
-            </label>
-            <select
-              className="bg-gray-100 form-select"
-              id="product"
-              name="product"
-              disabled={isDetail}
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
-            >
-              <option value="">Select Product</option>
-              <option value="Product A">Product A</option>
-              <option value="Product B">Product B</option>
-              <option value="Product C">Product C</option>
-            </select>
+            <label className="form-label">Product</label>
+            {!isDetail && (
+              <div className="flex flex-wrap gap-2">
+                {allProducts.map(prod => (
+                  <label key={prod} className="flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      checked={product.includes(prod)}
+                      onChange={() => toggleProductSelection(prod)}
+                    />
+                    <span>{prod}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+            {isDetail && <div>{product.join(', ')}</div>}
           </div>
 
-          {/* START DATE */}
+          {/* Start Date */}
           <div className="col-md-6">
-            <label htmlFor="startDate" className="form-label">
-              Start Date
-            </label>
+            <label className="form-label">Start Date</label>
             <div className="relative">
               <input
                 type="text"
-                id="startDate"
-                name="startDate"
                 className="bg-gray-100 form-control pr-10"
                 placeholder="Select Start Date"
                 value={startDate}
@@ -300,22 +296,18 @@ const PromotionFormComponent = ({
               />
               <img
                 src={DateIcon}
-                alt="Date icon"
+                alt="date"
                 className="w-5 h-5 absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none"
               />
             </div>
           </div>
 
-          {/* END DATE */}
+          {/* End Date */}
           <div className="col-md-6">
-            <label htmlFor="endDate" className="form-label">
-              End Date
-            </label>
+            <label className="form-label">End Date</label>
             <div className="relative">
               <input
                 type="text"
-                id="endDate"
-                name="endDate"
                 className="bg-gray-100 form-control pr-10"
                 placeholder="Select End Date"
                 value={endDate}
@@ -326,87 +318,68 @@ const PromotionFormComponent = ({
               />
               <img
                 src={DateIcon}
-                alt="Date icon"
+                alt="date"
                 className="w-5 h-5 absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none"
               />
             </div>
           </div>
 
-          {/* DISCOUNT (Both types) */}
+          {/* Discount */}
           <div className="col-md-6">
-            <label htmlFor="discount" className="form-label">
-              Discount
-            </label>
+            <label className="form-label">Discount</label>
             <select
               className="bg-gray-100 form-select"
-              id="discount"
-              name="discount"
-              disabled={isDetail}
               value={discount}
-              onChange={(e) => setDiscount(e.target.value)}
+              onChange={e => setDiscount(e.target.value)}
+              disabled={isDetail}
             >
               <option value="">Select Discount</option>
-              <option value="10%">10%</option>
-              <option value="20%">20%</option>
-              <option value="30%">30%</option>
-              <option value="40%">40%</option>
-              <option value="50%">50%</option>
+              <option value="Percentage : 5%">Percentage : 5%</option>
+              <option value="Percentage : 10%">Percentage : 10%</option>
+              <option value="Percentage : 15%">Percentage : 15%</option>
+              <option value="Percentage : 20%">Percentage : 20%</option>
+              <option value="Percentage : 25%">Percentage : 25%</option>
             </select>
           </div>
 
-          {/* PROMOTION USAGE LIMIT (Both types) */}
+          {/* Promotion Usage Limit */}
           <div className="col-md-6">
-            <label htmlFor="usageLimit" className="form-label">
-              Promotion Usage Limit
-            </label>
+            <label className="form-label">Promotion Usage Limit</label>
             <input
               type="number"
-              min="1"
-              placeholder="e.g. 100"
               className="bg-gray-100 form-control"
-              id="usageLimit"
-              name="usageLimit"
-              readOnly={isDetail}
+              placeholder="e.g. 20"
               value={usageLimit}
-              onChange={(e) => setUsageLimit(e.target.value)}
+              onChange={e => setUsageLimit(e.target.value)}
+              readOnly={isDetail}
             />
           </div>
 
-          {/* SHOW VOUCHER CODE ON CHECKOUT (Only if Voucher Code) */}
+          {/* Show voucher code on checkout (only if Voucher Code) */}
           {promotionType === 'Voucher Code' && (
-            <div className="col-12">
-              <div className="form-check">
+            <div className="col-md-12">
+              <label className="flex items-center gap-2">
                 <input
-                  className="form-check-input"
                   type="checkbox"
-                  id="showVoucherOnCheckout"
-                  disabled={isDetail}
                   checked={showVoucherOnCheckout}
-                  onChange={(e) => setShowVoucherOnCheckout(e.target.checked)}
+                  onChange={e => setShowVoucherOnCheckout(e.target.checked)}
+                  disabled={isDetail}
                 />
-                <label
-                  className="form-check-label"
-                  htmlFor="showVoucherOnCheckout"
-                >
-                  Show the voucher code on the checkout page
-                </label>
-              </div>
+                <span>Show the voucher code on the checkout page</span>
+              </label>
             </div>
           )}
 
-          {/* Error Message */}
+          {/* Error message */}
           {error && (
             <div className="col-12">
-              <div className="alert alert-danger text-sm" role="alert">
-                {error}
-              </div>
+              <div className="alert alert-danger">{error}</div>
             </div>
           )}
 
-          {/* Form Buttons */}
+          {/* Buttons */}
           <div className="flex flex-row-reverse gap-3 col-12">
             {isDetail ? (
-              // DETAIL MODE: Only show the "Close" button
               <button
                 type="button"
                 className="w-32 btn"
@@ -416,7 +389,6 @@ const PromotionFormComponent = ({
                 Close
               </button>
             ) : (
-              // ADD / EDIT MODE
               <>
                 <button type="submit" className="w-32 btn btn-danger">
                   {isEdit ? 'Save' : 'Add Promotion'}
