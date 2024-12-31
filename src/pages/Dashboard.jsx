@@ -39,39 +39,6 @@ const DashboardWithSidebar = () => {
     } else {
       return "Home";
     }
-
-    // switch (location.pathname) {
-    //   case "/home":
-    //     return "Home";
-    //   case "/product":
-    //   case "/product/add":
-    //   case "/product/edit/:id":
-    //   case "/product/detail/:id":
-    //     return "Product";
-    //   case "/category":
-    //     return "Category";
-    //   case "/orders":
-    //     return "Orders";
-    //   case "/promotion":
-    //   case "/promotion/add":
-    //   case "/promotion/edit/:id":
-    //   case "/promotion/detail/:id":
-    //     return "Promotion";
-    //   case "/banner":
-    //   case "/banner/add":
-    //   case "/banner/edit/:id":
-    //   case "/banner/detail/:id":
-    //     return "Banner Management";
-    //   case "/rating":
-    //     return "Rating";
-    //   case "/stock":
-    //   case "/stock/add":
-    //   case "/stock/edit/:id":
-    //   case "/stock/detail/:id":
-    //     return "Stock";
-    //   default:
-    //     return "Home";
-    // }
   };
 
   return (
@@ -81,6 +48,7 @@ const DashboardWithSidebar = () => {
         <Routes>
           <Route path="/dashboard" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
 
           <Route path="/banner" element={<BannerPage />} />
           <Route path="/banner/add" element={<BannerPage />} />

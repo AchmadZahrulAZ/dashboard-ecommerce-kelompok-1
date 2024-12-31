@@ -20,7 +20,7 @@ const ProductPage = () => {
       image: [
         {
           url_path:
-            "https://png.pngtree.com/png-vector/20191026/ourmid/pngtree-laptop-icon-png-image_1871608.jpg",
+            "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full/catalog-image/115/MTA-179297638/lenovo_lenovo_ideapad_5_2-in-1_14irh9_11id_12id_--_intel_core_i7-13620h_16gb_512gb_ssd_intel_uhd_graphics_windows_11_home_ohs_14-wuxga_oled_touch_2y_adp_full06_kd7w0ok3.jpg",
         },
       ],
       product_variant: [
@@ -41,7 +41,7 @@ const ProductPage = () => {
       image: [
         {
           url_path:
-            "https://png.pngtree.com/png-vector/20191026/ourmid/pngtree-laptop-icon-png-image_1871608.jpg",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9fU7Hh_xaTdMPLaLFBnDojOrmxY5sCfFXMg&s",
         },
       ],
       product_variant: [
@@ -65,7 +65,7 @@ const ProductPage = () => {
       image: [
         {
           url_path:
-            "https://png.pngtree.com/png-vector/20191026/ourmid/pngtree-laptop-icon-png-image_1871608.jpg",
+            "https://p-id.ipricegroup.com/uploaded_c9910c119465956dc5b3564f834b164fdfbb8c98.jpg",
         },
       ],
       product_variant: [
@@ -92,7 +92,7 @@ const ProductPage = () => {
       image: [
         {
           url_path:
-            "https://png.pngtree.com/png-vector/20191026/ourmid/pngtree-laptop-icon-png-image_1871608.jpg",
+            "https://bgr.com/wp-content/uploads/2021/07/sony-wh-1000xm4-review-1.jpg?quality=82&strip=all&resize=1400,1400",
         },
       ],
       product_variant: [
@@ -113,7 +113,7 @@ const ProductPage = () => {
       image: [
         {
           url_path:
-            "https://png.pngtree.com/png-vector/20191026/ourmid/pngtree-laptop-icon-png-image_1871608.jpg",
+            "https://pict.sindonews.net/webp/480/pena/news/2022/02/22/123/693729/review-smartwatch-garmin-venu-2-plus-rp74-jutaan-bisa-apa-saja-hel.webp",
         },
       ],
       product_variant: [
