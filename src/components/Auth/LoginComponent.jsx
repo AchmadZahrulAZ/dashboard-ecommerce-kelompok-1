@@ -1,7 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthPhoto from '../../assets/images/auth/AuthPhoto.png';
+import { useNavigate } from 'react-router-dom';
 
 const LoginComponent = () => {
+  const navigate = useNavigate(); // Uncomment if using react-router
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Handle Sign In
+  const handleSignIn = () => {
+    // Retrieve user data from localStorage
+    const savedUser = localStorage.getItem('dummyUser');
+    if (!savedUser) {
+      alert('No user found. Please sign up first.');
+      return;
+    }
+    
+    const { email: savedEmail, password: savedPassword } = JSON.parse(savedUser);
+    
+    // Check credentials
+    if (email === savedEmail && password === savedPassword) {
+      alert('Login successful!');
+      navigate('/dashboard');
+    } else {
+      alert('Invalid email or password!');
+    }
+  };
+
   return (
     <div
       className="flex items-center justify-center bg-white rounded-[30px]"
@@ -16,7 +41,7 @@ const LoginComponent = () => {
           {/* Title & Description */}
           <h1 className="text-black font-lato font-bold text-2xl">Login</h1>
           <p className="text-[#89868D] font-lato font-normal">
-            How do i get started lorem ipsum dolor at?
+            How do I get started lorem ipsum dolor at?
           </p>
 
           {/* Email Input */}
@@ -26,6 +51,8 @@ const LoginComponent = () => {
               type="email"
               placeholder="Enter your email"
               className="w-[330px] h-[46px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] px-4"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -38,6 +65,8 @@ const LoginComponent = () => {
               type="password"
               placeholder="Password"
               className="w-[330px] h-[46px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] px-4"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
@@ -49,7 +78,10 @@ const LoginComponent = () => {
           </div>
 
           {/* Button */}
-          <button className="w-[330px] h-[46px] bg-[#DB4444] text-white rounded-[8px] font-lato font-bold">
+          <button
+            className="w-[330px] h-[46px] bg-[#DB4444] text-white rounded-[8px] font-lato font-bold"
+            onClick={handleSignIn}
+          >
             Sign in
           </button>
 
