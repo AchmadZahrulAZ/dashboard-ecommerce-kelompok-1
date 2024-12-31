@@ -1,32 +1,6 @@
 import React, { useState } from "react";
 
-const OrdersModalComponent = ({ status }) => {
-  const [product, setProduct] = useState([
-    {
-      product_name: "HP Pavilion 14-DV0514TX",
-      amount: 1,
-      unit_price: 950,
-      total_price: 950,
-    },
-    {
-      product_name: "HP Pavilion 14-DV0514TX",
-      amount: 1,
-      unit_price: 950,
-      total_price: 950,
-    },
-    {
-      product_name: "HP Pavilion 14-DV0514TX",
-      amount: 1,
-      unit_price: 950,
-      total_price: 950,
-    },
-  ]);
-
-  const totalPrice = product.reduce(
-    (total, item) => total + parseInt(item.total_price),
-    0
-  );
-
+const OrdersModalComponent = ({ order, statusChange }) => {
   return (
     <div
       className="modal fade"
@@ -46,18 +20,18 @@ const OrdersModalComponent = ({ status }) => {
             </h1>
             <button
               className={`btn btn-sm px-3 h-8 rounded-full text-white ${
-                status === "Created"
+                order?.status === "Created"
                   ? "bg-[#DF7B00] hover:bg-[#DF7B00]/90"
-                  : status === "Process"
+                  : order?.status === "Process"
                   ? "bg-blue-500 hover:bg-blue-500/90"
-                  : status === "Canceled"
+                  : order?.status === "Canceled"
                   ? "btn-danger"
-                  : status === "Completed"
+                  : order?.status === "Completed"
                   ? "btn-success"
                   : ""
               }`}
             >
-              {status}
+              {order?.status}
             </button>
           </div>
           <div className="modal-body">
@@ -86,7 +60,7 @@ const OrdersModalComponent = ({ status }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {product.map((item, index) => (
+                  {order?.product.map((item, index) => (
                     <tr key={index}>
                       <td>{item.product_name}</td>
                       <td>{item.amount}</td>
@@ -97,12 +71,12 @@ const OrdersModalComponent = ({ status }) => {
                   <tr>
                     <td colSpan="2"></td>
                     <td>Sub Total </td>
-                    <td>${totalPrice}</td>
+                    <td>${order?.total}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            {status === "Process" && (
+            {order?.status === "Process" && (
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">
                   Tracking Number
@@ -119,7 +93,7 @@ const OrdersModalComponent = ({ status }) => {
           </div>
 
           <div className="border-0 modal-footer">
-            {status === "Completed" || status === "Canceled" ? (
+            {order?.status === "Completed" || order?.status === "Canceled" ? (
               <button
                 type="button"
                 className="w-32 btn btn-secondary"
@@ -140,6 +114,13 @@ const OrdersModalComponent = ({ status }) => {
                   type="button"
                   className="w-32 btn btn-danger"
                   data-bs-dismiss="modal"
+                  onClick={() => {
+                    if (order?.status === "Created") {
+                      statusChange(order.id, "Process");
+                    } else if (order?.status === "Process") {
+                      statusChange(order.id, "Completed");
+                    }
+                  }}
                 >
                   Accept
                 </button>

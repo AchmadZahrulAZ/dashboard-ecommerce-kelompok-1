@@ -4,7 +4,6 @@ import SortActive from "../../assets/icons/product/SortIconActive.svg";
 import EditIcon from "../../assets/icons/product/SolidPencil.svg";
 import DeleteIcon from "../../assets/icons/product/SolidTrash.svg";
 import Right from "../../assets/icons/rating/Right.svg";
-import PaginationChevronDownIcon from "../../assets/icons/rating/PaginationChevronDown.svg";
 import PaginationChevronLeftIcon from "../../assets/icons/rating/PaginationChevronLeft.svg";
 import PaginationChevronRightIcon from "../../assets/icons/rating/PaginationChevronRight.svg";
 import "../Product/ProductStyles.css";
@@ -160,6 +159,21 @@ const CategoryListComponent = () => {
     });
   };
 
+  // Handle Save or Update Category
+  const handleSaveOrUpdateCategory = (updatedCategory) => {
+    if (isEdit) {
+      // Update existing category
+      setCategory((prevCategory) =>
+        prevCategory.map((cat) =>
+          cat.id === updatedCategory.id ? updatedCategory : cat
+        )
+      );
+    } else {
+      // Add new category
+      setCategory((prevCategory) => [...prevCategory, updatedCategory]);
+    }
+  };
+
   //handle switch
   const handleSwitchChange = (categoryId, newPublishedValue) => {
     setCategory((prevCategory) =>
@@ -282,7 +296,7 @@ const CategoryListComponent = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedCategory.map((category) => (
+              {currentCategory.map((category) => (
                 <tr key={category.id}>
                   <td className="text-secondary">{category.name}</td>
                   <td className="text-secondary">{category.icon}</td>
@@ -375,22 +389,7 @@ const CategoryListComponent = () => {
           <CategoryModalComponent
             isEdit={isEdit}
             category={selectedCategory}
-            onSaveOrUpdate={(updatedCategory) => {
-              if (isEdit) {
-                // Update existing category
-                setCategory((prevCategory) =>
-                  prevCategory.map((cat) =>
-                    cat.id === updatedCategory.id ? updatedCategory : cat
-                  )
-                );
-              } else {
-                // Add new category
-                setCategory((prevCategory) => [
-                  ...prevCategory,
-                  updatedCategory,
-                ]);
-              }
-            }}
+            onSaveOrUpdate={handleSaveOrUpdateCategory}
           />
         </div>
       </div>

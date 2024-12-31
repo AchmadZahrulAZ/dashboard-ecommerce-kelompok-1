@@ -7,14 +7,13 @@ import "../Product/ProductStyles.css";
 
 const CategoryModalComponent = ({ isEdit, category, onSaveOrUpdate }) => {
   const [image, setImage] = useState(null);
-  const [name, setName] = useState(""); // Initialize name with empty string
+  const [name, setName] = useState("");
 
   useEffect(() => {
     if (isEdit && category) {
       setName(category.name);
       setImage(category.icon);
     } else {
-      // Reset state when modal is opened for adding category
       setName("");
       setImage(null);
     }
@@ -72,7 +71,7 @@ const CategoryModalComponent = ({ isEdit, category, onSaveOrUpdate }) => {
                   className="bg-gray-100 form-control"
                   id="name"
                   name="name"
-                  value={name} // Use name state
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -113,7 +112,6 @@ const CategoryModalComponent = ({ isEdit, category, onSaveOrUpdate }) => {
                     </div>
                     <div>
                       <button onClick={() => setImage(null)}>
-                        {/* Remove image when button is clicked */}
                         <img src={DeleteIcon} alt="delete icon" />
                       </button>
                     </div>
