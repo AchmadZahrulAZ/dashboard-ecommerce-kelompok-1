@@ -6,6 +6,7 @@ import DeleteIcon from "../../assets/icons/product/SolidTrash.svg";
 const ProductModalComponent = ({ varians, setVarians }) => {
   const [varianName, setVarianName] = useState("");
 
+  //handle add varian in modal
   const handleAddVarian = () => {
     if (varianName.trim() !== "") {
       setVarians([...varians, varianName]);
@@ -13,6 +14,7 @@ const ProductModalComponent = ({ varians, setVarians }) => {
     }
   };
 
+  //handle delete varian in modal
   const handleDeleteVarian = (index) => {
     setVarians(varians.filter((_, i) => i !== index));
   };

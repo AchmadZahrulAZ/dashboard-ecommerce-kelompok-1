@@ -9,6 +9,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import ItemProductComponent from "./ItemProductComponent";
 import ProductModalComponent from "./ProductModalComponent";
+import Swal from "sweetalert2";
 
 const ProductFormComponent = ({
   isAdd,
@@ -18,7 +19,6 @@ const ProductFormComponent = ({
   onAddProduct,
   onEditProduct,
 }) => {
-  const { id } = useParams();
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [varians, setVarians] = useState([]);
@@ -31,6 +31,7 @@ const ProductFormComponent = ({
     description: "",
   });
 
+  // Initialize form data with product details if in edit or detail mode
   useEffect(() => {
     if (isEdit || isDetail) {
       setFormData({
@@ -46,21 +47,25 @@ const ProductFormComponent = ({
     }
   }, [isEdit, isDetail, product]);
 
+  // Handle image selection and add it to the images array
   const handleImageChange = (e) => {
     const selectedImages = Array.from(e.target.files);
     setImages([...images, ...selectedImages]);
   };
 
+  // Remove the image at the specified index from the images array
   const handleDeleteImage = (index) => {
     const updatedImages = [...images];
     updatedImages.splice(index, 1);
     setImages(updatedImages);
   };
 
+  // Update form data when input fields change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     const newProduct = {
@@ -74,6 +79,23 @@ const ProductFormComponent = ({
     } else if (isEdit) {
       onEditProduct({ ...newProduct, id: product.id });
     }
+
+    Swal.fire({
+      title: isEdit
+        ? "This product was successfully updated"
+        : "This product was successfully added",
+      icon: "success",
+      customClass: {
+        title: "text-2xl font-bold",
+      },
+      showConfirmButton: false,
+    });
+
+    navigate("/product");
+  };
+
+  // Handle cancel button click
+  const handleCancel = () => {
     navigate("/product");
   };
 
@@ -338,7 +360,8 @@ const ProductFormComponent = ({
             {isDetail && (
               <button
                 className="w-32 btn btn-secondary"
-                onClick={() => navigate("/product")}
+                type="button"
+                onClick={handleCancel}
               >
                 Back
               </button>
@@ -350,8 +373,9 @@ const ProductFormComponent = ({
                   Save
                 </button>
                 <button
+                  type="button"
                   className="w-32 btn btn-outline-danger"
-                  onClick={() => navigate("/product")}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </button>
@@ -364,8 +388,9 @@ const ProductFormComponent = ({
                   Add Product
                 </button>
                 <button
+                  type="button"
                   className="w-32 btn btn-outline-danger"
-                  onClick={() => navigate("/product")}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </button>

@@ -133,15 +133,19 @@ const ProductPage = () => {
 
   const [productSelected, setProductSelected] = useState(null);
 
+  // Function to generate a unique ID for new products with the prefix "PRD-"
   const generateUniqueId = () => {
-    return Math.random().toString(36).substring(2, 15);
+    const randomNumber = Math.floor(Math.random() * 900) + 100;
+    return `PRD-${randomNumber}`;
   };
 
+  // Function to handle adding a new product
   const handleAddProduct = (newProduct) => {
     setProducts([...products, { ...newProduct, id: generateUniqueId() }]);
     navigate("/product");
   };
 
+  // Function to handle editing an existing product
   const handleEditProduct = (editedProduct) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
@@ -151,6 +155,7 @@ const ProductPage = () => {
     navigate("/product");
   };
 
+  // Function to handle switch change for publishing/unpublishing a product
   const handleSwitchChange = (productId, newPublishedValue) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
@@ -188,6 +193,7 @@ const ProductPage = () => {
     }
   };
 
+  // Function to handle deleting a product using SweetAlert2 for confirmation
   const handleDeleteProduct = (productId) => {
     Swal.fire({
       title: "Delete Product?",
