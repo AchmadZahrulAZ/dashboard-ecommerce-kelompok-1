@@ -19,6 +19,7 @@ const CategoryModalComponent = ({ isEdit, category, onSaveOrUpdate }) => {
     }
   }, [isEdit, category]);
 
+  // Function to handle saving or updating category
   const handleSaveOrUpdate = () => {
     const newCategory = {
       id: isEdit ? category.id : `CTG-${Date.now()}`, // Generate unique ID if adding new
