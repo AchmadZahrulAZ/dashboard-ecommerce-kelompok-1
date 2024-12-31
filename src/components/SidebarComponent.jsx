@@ -73,51 +73,54 @@ const SidebarComponent = ({ activePage }) => {
   ];
 
   return (
-    <div className="w-[218px] bg-white h-screen shadow-md">
-      {/* Top Box with Profile */}
-      <div className="bg-[#030406] h-[66px] flex items-center px-4">
-        <img
-          src={PhotoProfile}
-          alt="Profile"
-          className="w-[28px] h-[28px] rounded-full mr-3"
-        />
-        <div className="text-white">
-          <p className="text-sm font-medium">Anita Cruz</p>
-          <p className="text-xs">anita@commerce.com</p>
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <div className="w-[250px] bg-white min-h-screen shadow-md">
+        {/* Top Box with Profile */}
+        <div className="bg-[#030406] h-[66px] flex items-center px-4">
+          <img
+            src={PhotoProfile}
+            alt="Profile"
+            className="w-[28px] h-[28px] rounded-full mr-3"
+          />
+          <div className="text-white">
+            <p className="text-sm font-medium">Anita Cruz</p>
+            <p className="text-xs">anita@commerce.com</p>
+          </div>
         </div>
-      </div>
 
-      {/* Navigation Items */}
-      <ul className="mt-4">
-        {navigationItems.map((item) => (
-          <li
-            key={item.name}
-            className="flex items-center cursor-pointer relative"
-            onClick={() => navigate(item.path)}
-          >
-            {/* Left Box Indicator */}
-            {activePage === item.name && (
-              <div className="absolute left-0 h-[40px] w-[6px] bg-[#DB4444] rounded-tr-[20px] rounded-br-[20px]"></div>
-            )}
-
-            {/* Navigation Content */}
-            <div
-              className={`flex items-center px-4 py-2 w-full ${
-                activePage === item.name
-                  ? "text-[#DB4444] font-lato text-body-large"
-                  : "text-[#030406] font-lato text-body-large"
-              }`}
+        {/* Navigation Items */}
+        <ul className="mt-4">
+          {navigationItems.map((item) => (
+            <li
+              key={item.name}
+              className="flex items-center cursor-pointer relative"
+              onClick={() => navigate(item.path)}
             >
-              <img
-                src={activePage === item.name ? item.activeIcon : item.icon}
-                alt={item.name}
-                className="w-[20px] h-[20px] mr-3"
-              />
-              <span>{item.name}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
+              {/* Left Box Indicator */}
+              {activePage === item.name && (
+                <div className="absolute left-0 h-[40px] w-[6px] bg-[#DB4444] rounded-tr-[20px] rounded-br-[20px]"></div>
+              )}
+
+              {/* Navigation Content */}
+              <div
+                className={`flex items-center px-4 py-2 w-full ${
+                  activePage === item.name
+                    ? "text-[#DB4444] font-lato text-body-large"
+                    : "text-[#030406] font-lato text-body-large"
+                }`}
+              >
+                <img
+                  src={activePage === item.name ? item.activeIcon : item.icon}
+                  alt={item.name}
+                  className="w-[20px] h-[20px] mr-3"
+                />
+                <span className="whitespace-nowrap">{item.name}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

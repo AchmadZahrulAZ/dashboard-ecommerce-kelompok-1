@@ -1,8 +1,24 @@
-import React from 'react';
-// import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ForgotPasswordComponent = () => {
-//   const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+
+  const handleSendEmail = () => {
+    if (!email) {
+      alert('Please enter your email!');
+      return;
+    }
+
+    // Dummy OTP code — you can generate a random 4-digit code if you want
+    const dummyOTP = '1234';
+    // Store the OTP in localStorage
+    localStorage.setItem('dummyOTP', dummyOTP);
+
+    alert(`Reset instructions sent! (Your OTP is ${dummyOTP})`);
+    navigate('/input-otp');
+  };
 
   return (
     <div
@@ -38,13 +54,15 @@ const ForgotPasswordComponent = () => {
             type="email"
             placeholder="Enter your email"
             className="w-[330px] h-[46px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] px-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
         {/* Send Email Button */}
         <button
           className="w-[330px] h-[46px] bg-[#DB4444] text-white rounded-[8px] font-lato font-bold mt-6"
-          onClick={() => alert('Reset instructions sent!')}
+          onClick={handleSendEmail}
         >
           Send Email
         </button>
@@ -52,7 +70,7 @@ const ForgotPasswordComponent = () => {
         {/* Back to Login */}
         <a
           className="text-[#DB4444] font-lato font-normal mt-4 cursor-pointer"
-        //   onClick={() => navigate('/login')}
+          onClick={() => navigate('/login')}
         >
           Back to login
         </a>
@@ -62,4 +80,3 @@ const ForgotPasswordComponent = () => {
 };
 
 export default ForgotPasswordComponent;
-

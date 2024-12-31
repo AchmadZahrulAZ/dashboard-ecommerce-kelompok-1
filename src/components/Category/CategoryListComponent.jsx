@@ -4,7 +4,6 @@ import SortActive from "../../assets/icons/product/SortIconActive.svg";
 import EditIcon from "../../assets/icons/product/SolidPencil.svg";
 import DeleteIcon from "../../assets/icons/product/SolidTrash.svg";
 import Right from "../../assets/icons/rating/Right.svg";
-import PaginationChevronDownIcon from "../../assets/icons/rating/PaginationChevronDown.svg";
 import PaginationChevronLeftIcon from "../../assets/icons/rating/PaginationChevronLeft.svg";
 import PaginationChevronRightIcon from "../../assets/icons/rating/PaginationChevronRight.svg";
 import "../Product/ProductStyles.css";
@@ -12,9 +11,9 @@ import CategoryModalComponent from "./CategoryModalComponent";
 import Swal from "sweetalert2";
 
 const CategoryListComponent = () => {
-  {
-    /* Category Dummy */
-  }
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  /* Category Dummy */
   const [category, setCategory] = useState([
     {
       id: "CTG-001",
@@ -72,6 +71,16 @@ const CategoryListComponent = () => {
     direction: "ascending",
   });
 
+  // State for current page, items per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Function to edit category
+  const handleEditCategory = (category) => {
+    setIsEdit(true);
+    setSelectedCategory(category);
+  };
+
   // requestSort
   const requestSort = (key) => {
     let direction = "ascending";
@@ -97,6 +106,27 @@ const CategoryListComponent = () => {
     }
     return sortableCategory;
   }, [category, sortConfig]);
+
+  // Calculate total number of pages
+  const totalPages = Math.ceil(category.length / itemsPerPage);
+
+  // Pagination logic to get current category to display
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCategory = sortedCategory.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // Function to handle next page button click
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  // Function to handle previous page button click
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
   // Sweet Alert 2 Delete Category
   const handleDeleteCategory = (categoryId) => {
@@ -127,6 +157,59 @@ const CategoryListComponent = () => {
         });
       }
     });
+  };
+
+  // Handle Save or Update Category
+  const handleSaveOrUpdateCategory = (updatedCategory) => {
+    if (isEdit) {
+      // Update existing category
+      setCategory((prevCategory) =>
+        prevCategory.map((cat) =>
+          cat.id === updatedCategory.id ? updatedCategory : cat
+        )
+      );
+    } else {
+      // Add new category
+      setCategory((prevCategory) => [...prevCategory, updatedCategory]);
+    }
+  };
+
+  //handle switch
+  const handleSwitchChange = (categoryId, newPublishedValue) => {
+    setCategory((prevCategory) =>
+      prevCategory.map((category) =>
+        category.id === categoryId
+          ? { ...category, published: newPublishedValue }
+          : category
+      )
+    );
+    // confirmation alert
+    if (!newPublishedValue) {
+      Swal.fire({
+        title: "Confirmation",
+        text: "Are you sure want to unpublish this category? ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonText: "No",
+        confirmButtonText: "Yes",
+        customClass: {
+          title: "my-title-class",
+          cancelButton: "swal2-cancel-outline",
+          confirmButton: "swal2-confirm-no-outline",
+        },
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          setCategory((prevCategory) =>
+            prevCategory.map((category) =>
+              category.id === categoryId
+                ? { ...category, published: true }
+                : category
+            )
+          );
+        }
+      });
+    }
   };
 
   return (
@@ -213,7 +296,7 @@ const CategoryListComponent = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedCategory.map((category) => (
+              {currentCategory.map((category) => (
                 <tr key={category.id}>
                   <td className="text-secondary">{category.name}</td>
                   <td className="text-secondary">{category.icon}</td>
@@ -224,15 +307,17 @@ const CategoryListComponent = () => {
                         type="checkbox"
                         role="switch"
                         id="flexSwitchCheckChecked"
-                        // checked={product.published}
-                        // disabled
+                        checked={category.published}
+                        onChange={(e) =>
+                          handleSwitchChange(category.id, e.target.checked)
+                        }
                       />
                     </div>
                   </td>
                   <td>
                     <div className="gap-2 d-flex align-content-center align-items-center">
                       <button
-                        onClick={() => setIsEdit(true)}
+                        onClick={() => handleEditCategory(category)}
                         data-bs-toggle="modal"
                         data-bs-target="#modalFormCategory"
                       >
@@ -255,23 +340,57 @@ const CategoryListComponent = () => {
 
           {/* Pagination Section */}
           <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-            <span>1-20 of 27</span>
-            <div className="flex items-center space-x-4">
-              <span>Rows per page: 20</span>
-              <img src={PaginationChevronDownIcon} alt="Dropdown" />
-              <div className="flex items-center space-x-1">
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronLeftIcon} alt="Previous" />
-                </button>
-                <span className="text-[#687182]">1/2</span>
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronRightIcon} alt="Next" />
-                </button>
-              </div>
+            <span>
+              {indexOfFirstItem + 1}-{indexOfLastItem} of{" "}
+              {sortedCategory.length}
+            </span>
+
+            <div className="flex items-center space-x-1">
+              <span>Rows per page:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="w-[40px] text-center border rounded-md"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`w-[24px] h-[20px] rounded-md bg-white ${
+                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                <img src={PaginationChevronLeftIcon} alt="Previous" />
+              </button>
+
+              <span>
+                {currentPage}/{totalPages}
+              </span>
+
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`w-[24px] h-[20px] rounded-md bg-white ${
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                <img src={PaginationChevronRightIcon} alt="Next" />
+              </button>
             </div>
           </div>
+
           {/* Modal */}
-          <CategoryModalComponent isEdit={isEdit} />
+          <CategoryModalComponent
+            isEdit={isEdit}
+            category={selectedCategory}
+            onSaveOrUpdate={handleSaveOrUpdateCategory}
+          />
         </div>
       </div>
     </div>

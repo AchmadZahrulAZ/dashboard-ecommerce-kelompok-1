@@ -8,21 +8,19 @@ const HomeComponent = () => {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-md-9">
+        <div className="col-lg-9">
           <SummaryComponent />
         </div>
-        <div className="col-md-3">
+        <div className="mt-10 col-lg-3 lg:mt-0">
           <EarningMonthComponent />
         </div>
       </div>
       <div className="mt-10 row">
-        <div className="col-md-9">
+        <div className="col-lg-9">
           <RevanueComponent />
         </div>
-        <div className="col-md-3">
-          <div class="card">
-            <BestItemSalesComponent />
-          </div>
+        <div className="mt-10 col-lg-3 lg:mt-0">
+          <BestItemSalesComponent />
         </div>
       </div>
     </div>

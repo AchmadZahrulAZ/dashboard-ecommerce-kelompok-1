@@ -1,66 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import CalendarIcon from '../../assets/icons/rating/Calendar.svg';
 import DropdownIcon from '../../assets/icons/rating/DropdownBig.svg';
 import SearchIcon from '../../assets/icons/rating/Search.svg';
-import Sort from '../../assets/icons/product/SortIcon.svg';
-import SortActive from '../../assets/icons/product/SortIconActive.svg';
-import EditIcon from '../../assets/icons/product/SolidPencil.svg';
+import SortIcon from '../../assets/icons/product/SortIcon.svg';
+import SortActiveIcon from '../../assets/icons/product/SortIconActive.svg';
 import DetailIcon from '../../assets/icons/product/SolidEye.svg';
+import EditIcon from '../../assets/icons/product/SolidPencil.svg';
 import DeleteIcon from '../../assets/icons/product/SolidTrash.svg';
-import Right from '../../assets/icons/rating/Right.svg';
-import PaginationChevronDownIcon from '../../assets/icons/rating/PaginationChevronDown.svg';
 import PaginationChevronLeftIcon from '../../assets/icons/rating/PaginationChevronLeft.svg';
 import PaginationChevronRightIcon from '../../assets/icons/rating/PaginationChevronRight.svg';
-import { Link } from 'react-router-dom';
-import '../Product/ProductStyles.css';
 
-const StockListComponent = () => {
-  {
-    /* Product Dummy */
-  }
-  const [stocks, setStocks] = useState([
-    {
-      id: 'STK-001',
-      varian: 'Warna - Hitam',
-      name: 'Laptop HP',
-      quantity: 3,
-    },
-    {
-      id: 'STK-002',
-      varian: 'Warna - Silver',
-      name: 'Laptop Lenovo',
-      quantity: 2,
-    },
-    {
-      id: 'STK-003',
-      varian: 'Warna - Merah',
-      name: 'Mouse Logitech',
-      quantity: 4,
-    },
-    {
-      id: 'STK-004',
-      varian: 'Warna - Hijau',
-      name: 'Keyboard Razer',
-      quantity: 1,
-    },
-  ]);
+const StockListComponent = ({ stocks, onEdit, onDetail, onDelete }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Rows per page
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
-  const [sortConfig, setSortConfig] = useState({
-    key: null,
-    direction: 'ascending',
-  });
+  // --- NEW STATES ---
+  const [showDate, setShowDate] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('');
+  // ------------------
 
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
+  // For pagination
+  const totalPages = Math.ceil(stocks.length / itemsPerPage);
 
-  const sortedStocks = React.useMemo(() => {
-    let sortableStocks = [...stocks];
-    if (sortConfig.key !== null) {
+  // Total stock quantity
+  const totalStock = stocks.reduce((sum, stock) => sum + stock.quantity, 0);
+
+  // Handle sorting logic
+  const sortedStocks = useMemo(() => {
+    const sortableStocks = [...stocks];
+    if (sortConfig.key) {
       sortableStocks.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -74,46 +46,138 @@ const StockListComponent = () => {
     return sortableStocks;
   }, [stocks, sortConfig]);
 
+  // Handle filter logic (optional, based on selectedFilter)
+  // If selectedFilter is empty, we show all.
+  // Otherwise, we filter by the name that includes the selectedFilter.
+  const filteredByDropdown = sortedStocks.filter((stock) => {
+    if (!selectedFilter) return true; // No filter set
+    return stock.name.toLowerCase().includes(selectedFilter.toLowerCase());
+  });
+
+  // Handle search filter logic
+  const filteredStocks = filteredByDropdown.filter((stock) =>
+    stock.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Pagination logic
+  const currentStocks = filteredStocks.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  // --- NEW HANDLER: handling filter selection ---
+  const handleFilterSelect = (filter) => {
+    setSelectedFilter(filter);
+    setFilterOpen(false); // close the dropdown after selection
+  };
+  // ---------------------------------------------
+
   return (
-    <div className="container">
-      {/* Tittle Section */}
+    <div className="container relative">
       <div className="p-10 card">
+        {/* Title Section */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-lato font-bold text-[#030406] text-2xl">Stock</h2>
             <div className="flex items-center text-sm font-lato text-[#DB4444] mt-2">
               <span>Home</span>
-              <img src={Right} alt="Chevron" className="mx-2" />
+              <img src={PaginationChevronRightIcon} alt="Chevron" className="mx-2" />
               <span className="font-semibold">Stock</span>
             </div>
           </div>
-          <div>
-            <Link to={'/stock/add'} className="py-2 btn btn-danger">
-              Add New Stock
-            </Link>
-          </div>
+          <Link to="/stock/add" className="py-2 btn btn-danger">
+            Add New Stock
+          </Link>
         </div>
 
         {/* Second Row */}
         <div className="flex items-center justify-between mt-6">
           {/* Left Section */}
-          <div className="flex items-center space-x-4">
-            <button className="w-[48px] h-[40px] rounded-md border bg-white flex items-center justify-center">
+          <div className="flex items-center space-x-4 relative">
+            {/* Calendar Button */}
+            <button
+              className="w-[48px] h-[40px] rounded-md border bg-white flex items-center justify-center relative"
+              onClick={() => setShowDate((prev) => !prev)}
+            >
               <img src={CalendarIcon} alt="Calendar" />
             </button>
-            <div className="flex items-center w-[250px] h-[40px] border rounded-md">
-              <input type="text" placeholder="Select Filter" className="w-full px-4 text-sm outline-none" />
-              <img src={DropdownIcon} alt="Dropdown" className="mr-4" />
+            {showDate && (
+              <div className="absolute top-[50px] left-0 bg-white border p-2 rounded-md shadow-md z-10">
+                {new Date().toLocaleDateString()} {/* or a date-picker instead */}
+              </div>
+            )}
+
+            {/* Dropdown Filter */}
+            <div className="flex items-center w-[250px] h-[40px] border rounded-md relative">
+              <input
+                type="text"
+                placeholder="Select Filter (Product)"
+                className="w-full px-4 text-sm outline-none"
+                value={selectedFilter}
+                readOnly
+              />
+              <img
+                src={DropdownIcon}
+                alt="Dropdown"
+                className="mr-4 cursor-pointer"
+                onClick={() => setFilterOpen((prev) => !prev)}
+              />
+              {filterOpen && (
+                <ul className="absolute top-[42px] left-0 w-full bg-white border rounded-md z-10">
+                  <li
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleFilterSelect('Keyboard')}
+                  >
+                    Keyboard
+                  </li>
+                  <li
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleFilterSelect('Laptop')}
+                  >
+                    Laptop
+                  </li>
+                  <li
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleFilterSelect('Mouse')}
+                  >
+                    Mouse
+                  </li>
+                </ul>
+              )}
             </div>
+
+            {/* Search Field */}
             <div className="flex items-center w-[280px] h-[40px] border rounded-md">
               <img src={SearchIcon} alt="Search" className="ml-4" />
-              <input type="text" placeholder="Search" className="w-full px-4 text-sm outline-none" />
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 text-sm outline-none"
+              />
             </div>
           </div>
 
           {/* Right Section */}
-          <div className="w-[93px] h-[44px] bg-[#EEE4FF] flex flex-col items-end justify-center rounded-md pr-2 py-7" style={{ backgroundColor: '#EEE4FF' }}>
-            <p className="font-lato font-bold text-[#DB4444] text-lg">120</p>
+          <div className="w-[93px] h-[44px] bg-[#EEE4FF] flex flex-col items-end justify-center rounded-md pr-2 py-7">
+            <p className="font-lato font-bold text-[#DB4444] text-lg">{totalStock}</p>
             <p className="font-lato font-normal text-[#DB4444] text-sm">Total Stock</p>
           </div>
         </div>
@@ -123,68 +187,149 @@ const StockListComponent = () => {
           <table className="table tableCstm">
             <thead>
               <tr>
-                <th scope="col" onClick={() => requestSort('name')}>
-                  <div className="items-center gap-1 pb-2 d-flex">
-                    <p>Product Name</p>
-                    <img src={sortConfig.key === 'name' && (sortConfig.direction === 'ascending' || sortConfig.direction === 'descending') ? SortActive : Sort} alt="Icon Sort" />
+                <th onClick={() => handleSort('name')}>
+                  <div className="flex items-center gap-1">
+                    Product Name
+                    <img
+                      src={
+                        sortConfig.key === 'name' && sortConfig.direction === 'ascending'
+                          ? SortActiveIcon
+                          : SortIcon
+                      }
+                      alt="Sort"
+                    />
                   </div>
                 </th>
-                <th scope="col" onClick={() => requestSort('sku')}>
-                  <div className="items-center gap-1 pb-2 d-flex">
-                    <p>Varian Product</p>
-                    <img src={sortConfig.key === 'sku' && (sortConfig.direction === 'ascending' || sortConfig.direction === 'descending') ? SortActive : Sort} alt="Icon Sort" />
+                <th onClick={() => handleSort('varian')}>
+                  <div className="flex items-center gap-1">
+                    Varian Product
+                    <img
+                      src={
+                        sortConfig.key === 'varian' && sortConfig.direction === 'ascending'
+                          ? SortActiveIcon
+                          : SortIcon
+                      }
+                      alt="Sort"
+                    />
                   </div>
                 </th>
-                <th scope="col" onClick={() => requestSort('stock')}>
-                  <div className="items-center gap-1 pb-2 d-flex">
-                    <p>Quantity</p>
-                    <img src={sortConfig.key === 'stock' && (sortConfig.direction === 'ascending' || sortConfig.direction === 'descending') ? SortActive : Sort} alt="Icon Sort" />
+                <th onClick={() => handleSort('quantity')}>
+                  <div className="flex items-center gap-1">
+                    Quantity
+                    <img
+                      src={
+                        sortConfig.key === 'quantity' && sortConfig.direction === 'ascending'
+                          ? SortActiveIcon
+                          : SortIcon
+                      }
+                      alt="Sort"
+                    />
                   </div>
                 </th>
-                <th scope="col " className="items-center gap-1 pb-2 d-flex">
-                  Action
-                </th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {sortedStocks.map((stock) => (
+              {currentStocks.map((stock) => (
                 <tr key={stock.id}>
-                  <td className="text-secondary">{stock.name}</td>
-                  <td className="text-secondary">{stock.varian}</td>
-                  <td className="text-secondary">{stock.quantity}</td>
+                  <td>{stock.name}</td>
+                  <td>{stock.varian}</td>
+                  <td>{stock.quantity}</td>
                   <td>
-                    <div className="gap-2 d-flex align-content-center align-items-center">
+                    <div className="flex gap-2">
+                      {/* Detail Button */}
                       <Link to={'/stock/detail/' + stock.id}>
-                        <img src={DetailIcon} alt="Detail Button" className="transition-transform hover:scale-110" />
+                        <button onClick={() => onDetail(stock)}>
+                          <img src={DetailIcon} alt="Detail" />
+                        </button>
                       </Link>
+
+                      {/* Edit Button */}
                       <Link to={'/stock/edit/' + stock.id}>
-                        <img src={EditIcon} alt="Edit Button" className="transition-transform hover:scale-110" />
+                        <button onClick={() => onEdit(stock)}>
+                          <img src={EditIcon} alt="Edit" />
+                        </button>
                       </Link>
-                      <Link to={'/stock/delete/' + stock.id}>
-                        <img src={DeleteIcon} alt="Delete Button" className="transition-transform hover:scale-110" />
-                      </Link>
+
+                      {/* Delete Button */}
+                      <button onClick={() => onDelete(stock.id)}>
+                        <img src={DeleteIcon} alt="Delete" />
+                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
 
-          {/* Pagination Section */}
-          <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-            <span>1-20 of 27</span>
-            <div className="flex items-center space-x-4">
-              <span>Rows per page: 20</span>
-              <img src={PaginationChevronDownIcon} alt="Dropdown" />
-              <div className="flex items-center space-x-1">
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronLeftIcon} alt="Previous" />
-                </button>
-                <span className="text-[#687182]">1/2</span>
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronRightIcon} alt="Next" />
-                </button>
-              </div>
+        {/* Pagination Section */}
+        <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
+          {/* Left Section: Displaying data range */}
+          <div>
+            <span>
+              {currentPage * itemsPerPage - (itemsPerPage - 1)}-
+              {Math.min(currentPage * itemsPerPage, filteredStocks.length)} of{' '}
+              {filteredStocks.length}
+            </span>
+          </div>
+
+          {/* Right Section: Pagination controls and Rows per page */}
+          <div className="flex items-center space-x-4">
+            {/* Dropdown Rows per page */}
+            <div className="flex items-center space-x-1">
+              <span>Rows per page:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="w-[50px] text-center border border-[#3C4858] rounded-md"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center space-x-2">
+              {/* Previous Page Button */}
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`w-[24px] h-[20px] rounded-[6px] flex items-center justify-center border ${
+                  currentPage === 1
+                    ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed'
+                    : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'
+                }`}
+              >
+                <img
+                  src={PaginationChevronLeftIcon}
+                  alt="Previous"
+                  className={currentPage === 1 ? 'opacity-50' : 'opacity-100'}
+                />
+              </button>
+
+              {/* Current Page and Total Pages */}
+              <span className="font-medium">
+                {currentPage}/{totalPages}
+              </span>
+
+              {/* Next Page Button */}
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`w-[24px] h-[20px] rounded-[6px] flex items-center justify-center border ${
+                  currentPage === totalPages
+                    ? 'border-[#3C4858] bg-[#F7F9FC] cursor-not-allowed'
+                    : 'border-[#3C4858] bg-[#FFFFFF] hover:bg-[#EDEFF3]'
+                }`}
+              >
+                <img
+                  src={PaginationChevronRightIcon}
+                  alt="Next"
+                  className={currentPage === totalPages ? 'opacity-25' : 'opacity-50'}
+                />
+              </button>
             </div>
           </div>
         </div>
@@ -194,4 +339,3 @@ const StockListComponent = () => {
 };
 
 export default StockListComponent;
-

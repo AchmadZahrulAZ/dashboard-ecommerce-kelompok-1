@@ -15,54 +15,40 @@ import PromotionPage from "./PromotionPage";
 import RatingPage from "./RatingPage";
 import StockPage from "./StockPage";
 
-// Helper Component to get the current route and pass it to Sidebar
 const DashboardWithSidebar = () => {
   const location = useLocation();
 
   // Map route paths to page names
   const getActivePage = () => {
-    switch (location.pathname) {
-      case "/home":
-        return "Home";
-      case "/product":
-      case "/product/add":
-      case "/product/edit/:id":
-      case "/product/detail/:id":
-        return "Product";
-      case "/category":
-        return "Category";
-      case "/orders":
-        return "Orders";
-      case "/promotion":
-      case "/promotion/add":
-      case "/promotion/edit/:id":
-      case "/promotion/detail/:id":
-        return "Promotion";
-      case "/banner":
-      case "/banner/add":
-      case "/banner/edit/:id":
-      case "/banner/detail/:id":
-        return "Banner Management";
-      case "/rating":
-        return "Rating";
-      case "/stock":
-      case "/stock/add":
-      case "/stock/edit/:id":
-      case "/stock/detail/:id":
-        return "Stock";
-      default:
-        return "Home";
+    if (location.pathname.startsWith("/product")) {
+      return "Product";
+    } else if (location.pathname.startsWith("/banner")) {
+      return "Banner Management";
+    } else if (location.pathname.startsWith("/promotion")) {
+      return "Promotion";
+    } else if (location.pathname.startsWith("/stock")) {
+      return "Stock";
+    } else if (location.pathname.startsWith("/category")) {
+      return "Category";
+    } else if (location.pathname.startsWith("/orders")) {
+      return "Orders";
+    } else if (location.pathname.startsWith("/rating")) {
+      return "Rating";
+    } else if (location.pathname.startsWith("/home")) {
+      return "Home";
+    } else {
+      return "Home";
     }
   };
 
   return (
-    <div className="flex items-start justify-center lg:justify-between">
+    <div className="flex min-h-screen">
       <SidebarComponent activePage={getActivePage()} />
-      <div className="flex flex-col w-full min-h-screen px-3 py-12 bg-backgroundcstm">
-        {/* Pass activePage dynamically */}
+      <div className="flex-grow px-3 py-12 bg-backgroundcstm">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
 
           <Route path="/banner" element={<BannerPage />} />
           <Route path="/banner/add" element={<BannerPage />} />

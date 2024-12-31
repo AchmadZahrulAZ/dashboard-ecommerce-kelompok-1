@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import Sort from "../../assets/icons/product/SortIcon.svg";
 import SortActive from "../../assets/icons/product/SortIconActive.svg";
 import SubtractAccept from "../../assets/icons/orders/SubtractAccept.svg";
 import SubtractCancel from "../../assets/icons/orders/SubtractCancel.svg";
 import DetailIcon from "../../assets/icons/product/SolidEye.svg";
 import Right from "../../assets/icons/rating/Right.svg";
-import PaginationChevronDownIcon from "../../assets/icons/rating/PaginationChevronDown.svg";
 import PaginationChevronLeftIcon from "../../assets/icons/rating/PaginationChevronLeft.svg";
 import PaginationChevronRightIcon from "../../assets/icons/rating/PaginationChevronRight.svg";
 import "../Product/ProductStyles.css";
+import OrdersModalComponent from "./OrdersModalComponent";
+import Swal from "sweetalert2";
 
 const OrdersListComponent = () => {
-  {
-    /* Category Dummy */
-  }
+  /* Order Dummy */
   const [orders, setOrder] = useState([
     {
       id: "ORD-001",
@@ -22,6 +21,27 @@ const OrdersListComponent = () => {
       payment: "Gopay",
       amount: 111,
       status: "Created",
+      product: [
+        {
+          product_name: "HP Pavilion 14-DV0514TX",
+          amount: 1,
+          unit_price: 850,
+          total_price: 850,
+        },
+        {
+          product_name: "HP Gemini 222030-100",
+          amount: 1,
+          unit_price: 350,
+          total_price: 350,
+        },
+        {
+          product_name: "Acer Rock",
+          amount: 1,
+          unit_price: 250,
+          total_price: 250,
+        },
+      ],
+      total: 1450,
     },
     {
       id: "ORD-002",
@@ -30,6 +50,15 @@ const OrdersListComponent = () => {
       payment: "Dana",
       amount: 200,
       status: "Process",
+      product: [
+        {
+          product_name: "Lenovo Ideapad Slim 3",
+          amount: 1,
+          unit_price: 7500,
+          total_price: 7500,
+        },
+      ],
+      total: 7500,
     },
     {
       id: "ORD-003",
@@ -38,6 +67,21 @@ const OrdersListComponent = () => {
       payment: "Debit Online",
       amount: 999,
       status: "Canceled",
+      product: [
+        {
+          product_name: "Samsung Galaxy A54",
+          amount: 1,
+          unit_price: 5000,
+          total_price: 5000,
+        },
+        {
+          product_name: "Samsung Galaxy Buds 2 Pro",
+          amount: 1,
+          unit_price: 2000,
+          total_price: 2000,
+        },
+      ],
+      total: 7000,
     },
     {
       id: "ORD-004",
@@ -46,14 +90,76 @@ const OrdersListComponent = () => {
       payment: "Ovo",
       amount: 303,
       status: "Completed",
+      product: [
+        {
+          product_name: "Xiaomi Redmi Note 12",
+          amount: 2,
+          unit_price: 2500,
+          total_price: 5000,
+        },
+        {
+          product_name: "Xiaomi Redmi Buds 4 Pro",
+          amount: 1,
+          unit_price: 800,
+          total_price: 800,
+        },
+      ],
+      total: 5800,
+    },
+    {
+      id: "ORD-005",
+      username: "Aisyah Putri",
+      address: "Jl Mawar Melati No 9",
+      payment: "LinkAja",
+      amount: 550,
+      status: "Created",
+      product: [
+        {
+          product_name: "Asus Vivobook Pro 14 OLED",
+          amount: 1,
+          unit_price: 12000,
+          total_price: 12000,
+        },
+      ],
+      total: 12000,
+    },
+    {
+      id: "ORD-006",
+      username: "Rahmat Hidayat",
+      address: "Jl Cempaka Putih No 33",
+      payment: "Credit Card",
+      amount: 777,
+      status: "Process",
+      product: [
+        {
+          product_name: "Apple Macbook Pro 14",
+          amount: 1,
+          unit_price: 25000,
+          total_price: 25000,
+        },
+        {
+          product_name: "Apple Magic Mouse",
+          amount: 1,
+          unit_price: 1500,
+          total_price: 1500,
+        },
+      ],
+      total: 26500,
     },
   ]);
+
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
   });
 
+  // State for current page, items per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Function to handle sorting of the orders
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -62,7 +168,8 @@ const OrdersListComponent = () => {
     setSortConfig({ key, direction });
   };
 
-  const sortedOrders = React.useMemo(() => {
+  // Sorts the orders based on the sort configuration
+  const sortedOrders = useMemo(() => {
     let sortableOrders = [...orders];
     if (sortConfig.key !== null) {
       sortableOrders.sort((a, b) => {
@@ -77,6 +184,75 @@ const OrdersListComponent = () => {
     }
     return sortableOrders;
   }, [orders, sortConfig]);
+
+  // Calculate total number of pages
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+
+  // Pagination logic to get current order to display
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentOrder = sortedOrders.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Function to handle next page button click
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  // Function to handle previous page button click
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  // Function to handle order cancellation with SweetAlert2 confirmation
+  const handleCancel = (orderId) => {
+    Swal.fire({
+      title: "Confirmation",
+      text: "Are you sure want to decline this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      customClass: {
+        title: "my-title-class",
+        cancelButton: "swal2-cancel-outline",
+        confirmButton: "swal2-confirm-no-outline",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setOrder(
+          orders.map((order) =>
+            order.id === orderId ? { ...order, status: "Canceled" } : order
+          )
+        );
+        Swal.fire({
+          title: "This order was successfully declined!",
+          icon: "success",
+          customClass: {
+            title: "text-2xl font-bold",
+          },
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
+  // Function to handle the change of order status
+  const handleStatusChange = (orderId, newStatus) => {
+    setOrder((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+    Swal.fire({
+      title: "Order status updated successfully!",
+      icon: "success",
+      customClass: {
+        title: "text-2xl font-bold",
+      },
+      showConfirmButton: false,
+    });
+  };
 
   return (
     <div className="container">
@@ -186,7 +362,7 @@ const OrdersListComponent = () => {
               </tr>
             </thead>
             <tbody>
-              {sortedOrders.map((order) => (
+              {currentOrder.map((order) => (
                 <tr key={order.id}>
                   <td className="text-secondary">{order.username}</td>
                   <td className="text-secondary">{order.address}</td>
@@ -214,7 +390,12 @@ const OrdersListComponent = () => {
                     {order.status === "Canceled" ||
                     order.status === "Completed" ? (
                       <div className="gap-2 d-flex align-content-center align-items-center">
-                        <button>
+                        <button
+                          onClick={() => setSelectedOrder(order)}
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalFormOrders"
+                        >
                           <img
                             src={DetailIcon}
                             alt="Detail Button"
@@ -224,7 +405,12 @@ const OrdersListComponent = () => {
                       </div>
                     ) : (
                       <div className="gap-3 d-flex align-content-center align-items-center">
-                        <button>
+                        <button
+                          onClick={() => setSelectedOrder(order)}
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalFormOrders"
+                        >
                           <img
                             src={SubtractAccept}
                             alt="Accept Button"
@@ -232,7 +418,10 @@ const OrdersListComponent = () => {
                           />
                         </button>
 
-                        <button>
+                        <button
+                          type="button"
+                          onClick={() => handleCancel(order.id)}
+                        >
                           <img
                             src={SubtractCancel}
                             alt="Cancel Button"
@@ -249,21 +438,54 @@ const OrdersListComponent = () => {
 
           {/* Pagination Section */}
           <div className="flex items-center justify-between mt-6 text-sm text-[#687182]">
-            <span>1-20 of 27</span>
-            <div className="flex items-center space-x-4">
-              <span>Rows per page: 20</span>
-              <img src={PaginationChevronDownIcon} alt="Dropdown" />
-              <div className="flex items-center space-x-1">
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronLeftIcon} alt="Previous" />
-                </button>
-                <span className="text-[#687182]">1/2</span>
-                <button className="w-[24px] h-[20px] rounded-md bg-white flex items-center justify-center">
-                  <img src={PaginationChevronRightIcon} alt="Next" />
-                </button>
-              </div>
+            <span>
+              {indexOfFirstItem + 1}-{indexOfLastItem} of {sortedOrders.length}
+            </span>
+
+            <div className="flex items-center space-x-1">
+              <span>Rows per page:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="w-[40px] text-center border rounded-md"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`w-[24px] h-[20px] rounded-md bg-white ${
+                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                <img src={PaginationChevronLeftIcon} alt="Previous" />
+              </button>
+
+              <span>
+                {currentPage}/{totalPages}
+              </span>
+
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`w-[24px] h-[20px] rounded-md bg-white ${
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                <img src={PaginationChevronRightIcon} alt="Next" />
+              </button>
             </div>
           </div>
+
+          <OrdersModalComponent
+            order={selectedOrder}
+            statusChange={handleStatusChange}
+          />
         </div>
       </div>
     </div>

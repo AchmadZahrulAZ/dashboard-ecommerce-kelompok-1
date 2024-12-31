@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const InputOTP = () => {
+  const navigate = useNavigate();
+  const [otpInput, setOtpInput] = useState(['', '', '', '']);
+
+  const handleChange = (index, value) => {
+    const newOtp = [...otpInput];
+    newOtp[index] = value;
+    setOtpInput(newOtp);
+  };
+
+  const handleVerifyOTP = () => {
+    // Retrieve the dummyOTP from localStorage
+    const storedOTP = localStorage.getItem('dummyOTP') || '';
+
+    // Join user input
+    const userEnteredOTP = otpInput.join('');
+
+    if (storedOTP === userEnteredOTP) {
+      alert('OTP verified! Please check your email for the new password.');
+      navigate('/login');
+    } else {
+      alert('Invalid OTP code. Please try again.');
+    }
+  };
+
   return (
     <div
       className="flex items-center justify-center bg-white rounded-[30px]"
@@ -28,22 +53,22 @@ const InputOTP = () => {
 
         {/* OTP Form */}
         <div className="flex justify-center space-x-4 mt-6">
-          {Array(4)
-            .fill(null)
-            .map((_, index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength="1"
-                className="w-[71px] h-[43px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] text-center text-xl"
-              />
-            ))}
+          {Array(4).fill(null).map((_, index) => (
+            <input
+              key={index}
+              type="text"
+              maxLength="1"
+              className="w-[71px] h-[43px] bg-[#F4F5F9] border border-[#DBDCDE] rounded-[8px] text-center text-xl"
+              value={otpInput[index]}
+              onChange={(e) => handleChange(index, e.target.value)}
+            />
+          ))}
         </div>
 
         {/* Send OTP Button */}
         <button
           className="w-[330px] h-[46px] bg-[#DB4444] text-white rounded-[8px] font-lato font-bold mt-6"
-          onClick={() => alert('OTP verified!')}
+          onClick={handleVerifyOTP}
         >
           Send OTP
         </button>
@@ -61,4 +86,3 @@ const InputOTP = () => {
 };
 
 export default InputOTP;
-
